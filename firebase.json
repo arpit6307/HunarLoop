@@ -1,0 +1,17 @@
+{
+  "projects": {
+    "default": "hunarloop"
+  },
+  "auth": {
+    "providers": {
+      "emailPassword": true,
+      "googleSignIn": {
+        "oAuthBrandDisplayName": "HunarLoop",
+        "supportEmail": "riturajswaroop2527@gmail.com"
+      }
+    }
+  },
+  "firestore": {
+    "rules": "firestore.rules"
+  }
+}

@@ -1,0 +1,28 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // User profile access rules
+    match /users/{userId} {
+      allow read, write: if true;
+    }
+
+    // Booking access rules
+    match /bookings/{bookingId} {
+      allow read, write: if true;
+    }
+
+    // Chat room and messaging rules
+    match /chats/{chatId} {
+      allow read, write: if true;
+      
+      match /messages/{messageId} {
+        allow read, write: if true;
+      }
+    }
+
+    // Default development fallback rule
+    match /{document=**} {
+      allow read, write: if true;
+    }
+  }
+}

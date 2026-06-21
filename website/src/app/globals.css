@@ -1,0 +1,90 @@
+@import "tailwindcss";
+
+@theme {
+  --color-primary: #000000;
+  --color-accent: #FFE600;
+  --color-brutal-yellow: #FFE600;
+  --color-card: #FFFFFF;
+  --color-border: #000000;
+
+  --font-sans: var(--font-sans), system-ui, sans-serif;
+  --font-display: var(--font-display), var(--font-sans), system-ui, sans-serif;
+}
+
+:root {
+  --background: #FFE600;
+  --foreground: #000000;
+}
+
+body {
+  background-color: #FFE600;
+  color: #000000;
+  font-family: var(--font-sans);
+}
+
+/* Custom Neo-Brutalism Utilities */
+.brutalist-border {
+  border: 3px solid #000000 !important;
+}
+
+.brutalist-border-bottom {
+  border-bottom: 3px solid #000000 !important;
+}
+
+.brutalist-shadow {
+  box-shadow: 4px 4px 0px 0px #000000 !important;
+}
+
+.brutalist-shadow-lg {
+  box-shadow: 8px 8px 0px 0px #000000 !important;
+}
+
+.brutalist-shadow-sm {
+  box-shadow: 2px 2px 0px 0px #000000 !important;
+}
+
+.brutalist-card {
+  background-color: #FFFFFF;
+  border: 3px solid #000000;
+  box-shadow: 4px 4px 0px 0px #000000;
+  transition: all 0.15s ease-in-out;
+}
+
+.brutalist-card:hover {
+  transform: translate(-2px, -2px);
+  box-shadow: 6px 6px 0px 0px #000000;
+}
+
+.brutalist-button {
+  background-color: #FFE600;
+  color: #000000;
+  font-weight: 800;
+  border: 3px solid #000000;
+  box-shadow: 4px 4px 0px 0px #000000;
+  cursor: pointer;
+  transition: all 0.1s ease-in-out;
+}
+
+.brutalist-button:hover {
+  transform: translate(-1px, -1px);
+  box-shadow: 5px 5px 0px 0px #000000;
+}
+
+.brutalist-button:active {
+  transform: translate(2px, 2px);
+  box-shadow: 2px 2px 0px 0px #000000;
+}
+
+.brutalist-input {
+  background-color: #FFFFFF;
+  color: #000000;
+  border: 3px solid #000000;
+  box-shadow: 3px 3px 0px 0px #000000;
+  font-weight: bold;
+}
+
+.brutalist-input:focus {
+  outline: none;
+  background-color: #FFFFF0;
+  box-shadow: 5px 5px 0px 0px #000000;
+}
