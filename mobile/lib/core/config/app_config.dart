@@ -4,4 +4,5 @@ class AppConfig {
   // Cloudinary credentials for unsigned uploads (change to your own Cloudinary keys)
   static const String cloudinaryCloudName = 'dhsyajcf3';
   static const String cloudinaryUploadPreset = 'Hunar-Loop';
+  static const String cloudinaryVideoUploadPreset = 'Hunar-Loop'; // Create a dedicated video preset if 'Hunar-Loop' is image-only
 }
