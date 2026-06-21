@@ -11,6 +11,7 @@ import '../../core/utils/crop_dialog.dart';
 import '../../core/services/cloudinary_service.dart';
 import '../auth/onboarding_screen.dart'; // import BrutalistCard
 import '../customer/worker_profile.dart'; // import VideoPlayerOverlay
+import '../../core/utils/localization.dart';
 
 class WorkerPortfolioEditorScreen extends ConsumerStatefulWidget {
   const WorkerPortfolioEditorScreen({super.key});
@@ -266,6 +267,7 @@ class _WorkerPortfolioEditorScreenState extends ConsumerState<WorkerPortfolioEdi
 
   @override
   Widget build(BuildContext context) {
+    final locale = ref.watch(localeProvider);
     final isDark = Theme.of(context).brightness == Brightness.dark;
     final textCol = isDark ? Colors.white : Colors.black;
     final borderCol = isDark ? Colors.white : Colors.black;
@@ -317,7 +319,7 @@ class _WorkerPortfolioEditorScreenState extends ConsumerState<WorkerPortfolioEdi
 
         return Scaffold(
           appBar: AppBar(
-            title: const Text('PORTFOLIO & COVER EDITOR'),
+            title: Text(AppLocalizations.translate('portfolio_cover_editor', locale)),
             leading: IconButton(
               icon: Icon(Icons.arrow_back_rounded, color: textCol),
               onPressed: () {
@@ -368,13 +370,13 @@ class _WorkerPortfolioEditorScreenState extends ConsumerState<WorkerPortfolioEdi
                                   : null,
                             ),
                             child: coverImageUrl == null || coverImageUrl.isEmpty
-                                ? const Center(
+                                ? Center(
                                     child: Column(
                                       mainAxisAlignment: MainAxisAlignment.center,
                                       children: [
-                                        Icon(Icons.add_photo_alternate_outlined, color: AppColors.accent, size: 36),
-                                        SizedBox(height: 6),
-                                        Text('TAP TO ADD COVER IMAGE', style: TextStyle(color: AppColors.accent, fontWeight: FontWeight.w900, fontSize: 10)),
+                                        const Icon(Icons.add_photo_alternate_outlined, color: AppColors.accent, size: 36),
+                                        const SizedBox(height: 6),
+                                        Text(AppLocalizations.translate('add_cover_image', locale), style: const TextStyle(color: AppColors.accent, fontWeight: FontWeight.w900, fontSize: 10)),
                                       ],
                                     ),
                                   )
@@ -385,7 +387,7 @@ class _WorkerPortfolioEditorScreenState extends ConsumerState<WorkerPortfolioEdi
                                       child: Container(
                                         padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                                         color: Colors.black,
-                                        child: const Text('EDIT COVER', style: TextStyle(color: AppColors.accent, fontSize: 9, fontWeight: FontWeight.w900)),
+                                        child: Text(AppLocalizations.translate('edit_cover', locale), style: const TextStyle(color: AppColors.accent, fontSize: 9, fontWeight: FontWeight.w900)),
                                       ),
                                     ),
                                   ),
@@ -485,8 +487,8 @@ class _WorkerPortfolioEditorScreenState extends ConsumerState<WorkerPortfolioEdi
                         Row(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
-                            Text('PORTFOLIO PHOTOS', style: TextStyle(fontSize: 14, fontWeight: FontWeight.w900, color: textCol)),
-                            Text('${portfolioImages.length} PHOTOS', style: TextStyle(fontSize: 11, fontWeight: FontWeight.bold, color: mutedTextCol)),
+                            Text(AppLocalizations.translate('portfolio_photos', locale), style: TextStyle(fontSize: 14, fontWeight: FontWeight.w900, color: textCol)),
+                            Text('${portfolioImages.length} ${AppLocalizations.translate('photos', locale).toUpperCase()}', style: TextStyle(fontSize: 11, fontWeight: FontWeight.bold, color: mutedTextCol)),
                           ],
                         ),
                         const SizedBox(height: 12),
@@ -563,7 +565,7 @@ class _WorkerPortfolioEditorScreenState extends ConsumerState<WorkerPortfolioEdi
                                     children: [
                                       Icon(Icons.add_a_photo_outlined, color: textCol, size: 20),
                                       const SizedBox(height: 4),
-                                      const Text('ADD PHOTO', style: TextStyle(fontSize: 8, fontWeight: FontWeight.w900)),
+                                      Text(AppLocalizations.translate('add_photo', locale), style: const TextStyle(fontSize: 8, fontWeight: FontWeight.w900)),
                                     ],
                                   ),
                                 ),
@@ -616,8 +618,8 @@ class _WorkerPortfolioEditorScreenState extends ConsumerState<WorkerPortfolioEdi
                         Row(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
-                            Text('PORTFOLIO VIDEOS', style: TextStyle(fontSize: 14, fontWeight: FontWeight.w900, color: textCol)),
-                            Text('${portfolioVideos.length} VIDEOS', style: TextStyle(fontSize: 11, fontWeight: FontWeight.bold, color: mutedTextCol)),
+                            Text(AppLocalizations.translate('portfolio_videos', locale), style: TextStyle(fontSize: 14, fontWeight: FontWeight.w900, color: textCol)),
+                            Text('${portfolioVideos.length} ${AppLocalizations.translate('videos', locale).toUpperCase()}', style: TextStyle(fontSize: 11, fontWeight: FontWeight.bold, color: mutedTextCol)),
                           ],
                         ),
                         const SizedBox(height: 12),
@@ -627,10 +629,10 @@ class _WorkerPortfolioEditorScreenState extends ConsumerState<WorkerPortfolioEdi
                             color: bgCol,
                             shadowOffset: 3.0,
                             padding: const EdgeInsets.all(16),
-                            child: const Center(
+                            child: Center(
                               child: Text(
-                                'NO WORK VIDEOS ADDED YET',
-                                style: TextStyle(fontSize: 11, fontWeight: FontWeight.w900, color: AppColors.textMuted),
+                                AppLocalizations.translate('no_videos_added', locale),
+                                style: const TextStyle(fontSize: 11, fontWeight: FontWeight.w900, color: AppColors.textMuted),
                               ),
                             ),
                           )
@@ -675,7 +677,7 @@ class _WorkerPortfolioEditorScreenState extends ConsumerState<WorkerPortfolioEdi
                                                 style: TextStyle(fontWeight: FontWeight.w900, fontSize: 11, color: textCol),
                                               ),
                                               Text(
-                                                'DURATION: $duration • ${url.startsWith("blob:") ? "LOCAL VIDEO FILE" : url}',
+                                                '${AppLocalizations.translate('duration', locale)}: $duration • ${url.startsWith("blob:") ? "LOCAL VIDEO FILE" : url}',
                                                 maxLines: 1,
                                                 overflow: TextOverflow.ellipsis,
                                                 style: const TextStyle(fontSize: 8, color: AppColors.textMuted, fontWeight: FontWeight.bold),
@@ -711,7 +713,7 @@ class _WorkerPortfolioEditorScreenState extends ConsumerState<WorkerPortfolioEdi
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               Text(
-                                'ADD NEW WORK VIDEO',
+                                AppLocalizations.translate('add_new_video', locale),
                                 style: TextStyle(fontWeight: FontWeight.w900, color: textCol, fontSize: 12),
                               ),
                               const SizedBox(height: 12),
@@ -719,9 +721,9 @@ class _WorkerPortfolioEditorScreenState extends ConsumerState<WorkerPortfolioEdi
                                 controller: _videoTitleController,
                                 textCapitalization: TextCapitalization.characters,
                                 style: TextStyle(color: textCol, fontSize: 13, fontWeight: FontWeight.bold),
-                                decoration: const InputDecoration(
-                                  hintText: 'ENTER VIDEO TITLE (E.G. BASIN LEAK REPAIR)',
-                                  hintStyle: TextStyle(color: Colors.grey),
+                                decoration: InputDecoration(
+                                  hintText: AppLocalizations.translate('enter_video_title', locale),
+                                  hintStyle: const TextStyle(color: Colors.grey),
                                 ),
                               ),
                               const SizedBox(height: 16),
@@ -786,8 +788,8 @@ class _WorkerPortfolioEditorScreenState extends ConsumerState<WorkerPortfolioEdi
                                           padding: const EdgeInsets.symmetric(vertical: 12),
                                           child: Center(
                                             child: Text(
-                                              'CHOOSE VIDEO FROM GALLERY',
-                                              style: TextStyle(color: AppColors.accent, fontWeight: FontWeight.w900, fontSize: 10),
+                                              AppLocalizations.translate('choose_video', locale),
+                                              style: const TextStyle(color: AppColors.accent, fontWeight: FontWeight.w900, fontSize: 10),
                                             ),
                                           ),
                                         ),

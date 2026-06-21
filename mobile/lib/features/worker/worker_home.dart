@@ -310,7 +310,7 @@ class _WorkerHomeScreenState extends ConsumerState<WorkerHomeScreen> {
     Widget activeView;
     switch (_selectedTab) {
       case 0:
-        activeView = _buildDashboardTabView(context, name, uid);
+        activeView = _buildDashboardTabView(context, name, uid, locale);
         break;
       case 1:
         activeView = const WorkerEarningsTabView();
@@ -319,7 +319,7 @@ class _WorkerHomeScreenState extends ConsumerState<WorkerHomeScreen> {
         activeView = const WorkerProfileTabView();
         break;
       default:
-        activeView = _buildDashboardTabView(context, name, uid);
+        activeView = _buildDashboardTabView(context, name, uid, locale);
     }
 
     final user = FirebaseAuth.instance.currentUser;
@@ -427,7 +427,7 @@ class _WorkerHomeScreenState extends ConsumerState<WorkerHomeScreen> {
     return scaffold;
   }
 
-  Widget _buildDashboardTabView(BuildContext context, String name, String uid) {
+  Widget _buildDashboardTabView(BuildContext context, String name, String uid, String locale) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
     final textCol = isDark ? Colors.white : Colors.black;
     return StreamBuilder<DocumentSnapshot>(
@@ -519,7 +519,7 @@ class _WorkerHomeScreenState extends ConsumerState<WorkerHomeScreen> {
                                       ),
                                       const SizedBox(width: 4),
                                       Text(
-                                        isOnline ? 'ONLINE' : 'OFFLINE',
+                                        isOnline ? AppLocalizations.translate('online', locale) : AppLocalizations.translate('offline', locale),
                                         style: TextStyle(color: isOnline ? Colors.green : Colors.grey, fontSize: 9, fontWeight: FontWeight.w900),
                                       ),
                                     ],
@@ -555,17 +555,17 @@ class _WorkerHomeScreenState extends ConsumerState<WorkerHomeScreen> {
                   const SizedBox(height: 24),
 
                   // Stats dashboard widget
-                  Text("TODAY'S PERFORMANCE", style: TextStyle(fontSize: isSmall ? 14 : 16, fontWeight: FontWeight.w900, color: textCol)),
+                  Text(AppLocalizations.translate('todays_performance', locale), style: TextStyle(fontSize: isSmall ? 14 : 16, fontWeight: FontWeight.w900, color: textCol)),
                   const SizedBox(height: 16),
                   
                   Row(
                     children: [
                       Expanded(
-                        child: _buildDashboardStatCard(context, 'EARNINGS', '₹$todayEarnings', Icons.payments_outlined, AppColors.highlightGreen, isSmall: isSmall),
+                        child: _buildDashboardStatCard(context, AppLocalizations.translate('earnings', locale), '₹$todayEarnings', Icons.payments_outlined, AppColors.highlightGreen, isSmall: isSmall),
                       ),
                       const SizedBox(width: 16),
                       Expanded(
-                        child: _buildDashboardStatCard(context, 'HUNAR SCORE', '$hunarScore/100', Icons.shield_outlined, AppColors.highlightBlue, isSmall: isSmall),
+                        child: _buildDashboardStatCard(context, AppLocalizations.translate('hunar_score', locale), '$hunarScore/100', Icons.shield_outlined, AppColors.highlightBlue, isSmall: isSmall),
                       ),
                     ],
                   ),
@@ -580,14 +580,14 @@ class _WorkerHomeScreenState extends ConsumerState<WorkerHomeScreen> {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        const Text(
-                          'SIMULATE BOOKING FLOW',
-                          style: TextStyle(fontWeight: FontWeight.w900, color: Colors.black, fontSize: 14),
+                        Text(
+                          AppLocalizations.translate('simulate_booking', locale),
+                          style: const TextStyle(fontWeight: FontWeight.w900, color: Colors.black, fontSize: 14),
                         ),
                         const SizedBox(height: 4),
-                        const Text(
-                          'Trigger a simulated customer job request to inspect acceptance and navigation pages.',
-                          style: TextStyle(color: AppColors.textMuted, fontSize: 11, fontWeight: FontWeight.bold),
+                        Text(
+                          AppLocalizations.translate('simulate_desc', locale),
+                          style: const TextStyle(color: AppColors.textMuted, fontSize: 11, fontWeight: FontWeight.bold),
                         ),
                         const SizedBox(height: 16),
                         SizedBox(
@@ -598,9 +598,9 @@ class _WorkerHomeScreenState extends ConsumerState<WorkerHomeScreen> {
                               color: AppColors.accent,
                               shadowOffset: 0,
                               child: Padding(
-                                padding: EdgeInsets.symmetric(vertical: 14),
+                                padding: const EdgeInsets.symmetric(vertical: 14),
                                 child: Center(
-                                  child: Text('SIMULATE REQUEST ALERT', style: TextStyle(fontWeight: FontWeight.w900, fontSize: 12, color: textCol)),
+                                  child: Text(AppLocalizations.translate('simulate_alert_btn', locale), style: TextStyle(fontWeight: FontWeight.w900, fontSize: 12, color: textCol)),
                                 ),
                               ),
                             ),
@@ -613,17 +613,17 @@ class _WorkerHomeScreenState extends ConsumerState<WorkerHomeScreen> {
                   const SizedBox(height: 24),
 
                   // Scheduled calendar list
-                  Text('UPCOMING SCHEDULE', style: TextStyle(fontSize: 16, fontWeight: FontWeight.w900, color: textCol)),
+                  Text(AppLocalizations.translate('upcoming_schedule', locale), style: TextStyle(fontSize: 16, fontWeight: FontWeight.w900, color: textCol)),
                   const SizedBox(height: 12),
                   if (upcomingBookings.isEmpty)
                     BrutalistCard(
                       color: Colors.white,
                       shadowOffset: 3.0,
                       padding: const EdgeInsets.all(16),
-                      child: const Center(
+                      child: Center(
                         child: Text(
-                          'NO UPCOMING BOOKINGS SCHEDULED',
-                          style: TextStyle(fontSize: 12, fontWeight: FontWeight.w900, color: AppColors.textMuted),
+                          AppLocalizations.translate('no_upcoming_bookings', locale),
+                          style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w900, color: AppColors.textMuted),
                         ),
                       ),
                     )

@@ -11,6 +11,7 @@ import '../../core/models/worker.dart';
 import '../auth/onboarding_screen.dart'; // import BrutalistCard
 import '../../core/utils/web_video_player.dart';
 import 'customer_home.dart';
+import '../../core/utils/localization.dart';
 
 class CustomerWorkerProfileScreen extends ConsumerStatefulWidget {
   const CustomerWorkerProfileScreen({super.key});
@@ -100,6 +101,7 @@ class _CustomerWorkerProfileScreenState extends ConsumerState<CustomerWorkerProf
 
   @override
   Widget build(BuildContext context) {
+    final locale = ref.watch(localeProvider);
     final isDark = Theme.of(context).brightness == Brightness.dark;
     final textCol = isDark ? Colors.white : Colors.black;
     final borderCol = isDark ? Colors.white : Colors.black;
@@ -281,11 +283,11 @@ class _CustomerWorkerProfileScreenState extends ConsumerState<CustomerWorkerProf
                             child: Row(
                               mainAxisAlignment: MainAxisAlignment.spaceAround,
                               children: [
-                                Expanded(child: _buildProfileStat('HUNAR SCORE', '$hunarScore/100', textCol)),
+                                Expanded(child: _buildProfileStat(AppLocalizations.translate('hunar_score', locale), '$hunarScore/100', textCol)),
                                 _buildVerticalDivider(),
-                                Expanded(child: _buildProfileStat('RATING', '$rating ⭐', textCol)),
+                                Expanded(child: _buildProfileStat(AppLocalizations.translate('rating', locale), '$rating ⭐', textCol)),
                                 _buildVerticalDivider(),
-                                Expanded(child: _buildProfileStat('EXPERIENCE', experienceYears.toString().toUpperCase(), textCol)),
+                                Expanded(child: _buildProfileStat(AppLocalizations.translate('experience', locale), experienceYears.toString().toUpperCase(), textCol)),
                               ],
                             ),
                           ),
@@ -308,14 +310,14 @@ class _CustomerWorkerProfileScreenState extends ConsumerState<CustomerWorkerProf
                               color: Colors.black,
                               shadowOffset: 4.0,
                               padding: const EdgeInsets.symmetric(vertical: 14),
-                              child: const Row(
+                              child: Row(
                                 mainAxisAlignment: MainAxisAlignment.center,
                                 children: [
-                                  Icon(Icons.photo_library_outlined, color: AppColors.accent),
-                                  SizedBox(width: 8),
+                                  const Icon(Icons.photo_library_outlined, color: AppColors.accent),
+                                  const SizedBox(width: 8),
                                   Text(
-                                    'VIEW WORK PORTFOLIO GALLERY',
-                                    style: TextStyle(color: AppColors.accent, fontWeight: FontWeight.w900, fontSize: 12),
+                                    AppLocalizations.translate('view_portfolio_gallery', locale),
+                                    style: const TextStyle(color: AppColors.accent, fontWeight: FontWeight.w900, fontSize: 12),
                                   ),
                                 ],
                               ),
@@ -326,7 +328,7 @@ class _CustomerWorkerProfileScreenState extends ConsumerState<CustomerWorkerProf
 
                           // Detailed statistics list
                           Text(
-                            'PERFORMANCE METRICS',
+                            AppLocalizations.translate('performance_metrics', locale),
                             style: TextStyle(fontSize: 15, fontWeight: FontWeight.w900, color: textCol),
                           ),
                           const SizedBox(height: 12),
@@ -354,16 +356,16 @@ class _CustomerWorkerProfileScreenState extends ConsumerState<CustomerWorkerProf
                                 padding: const EdgeInsets.all(16),
                                 child: Column(
                                   children: [
-                                    _buildMetricRow(context, 'Job Completion Rate', worker.completionRate),
+                                    _buildMetricRow(context, AppLocalizations.translate('job_completion_rate', locale), worker.completionRate),
                                     const Divider(color: Colors.black, thickness: 1.0),
-                                    _buildMetricRow(context, 'Average Response Time', worker.responseTime),
+                                    _buildMetricRow(context, AppLocalizations.translate('average_response_time', locale), worker.responseTime),
                                     const Divider(color: Colors.black, thickness: 1.0),
-                                    _buildMetricRow(context, 'Service Area Radius', 'Up to 10 km'),
+                                    _buildMetricRow(context, AppLocalizations.translate('service_area_radius', locale), 'Up to 10 km'),
                                     const Divider(color: Colors.black, thickness: 1.0),
-                                    _buildMetricRow(context, 'Completed Bookings', '${worker.reviewsCount}+ Jobs'),
+                                    _buildMetricRow(context, AppLocalizations.translate('completed_bookings', locale), '${worker.reviewsCount}+ Jobs'),
                                     if (showEarnings) ...[
                                       const Divider(color: Colors.black, thickness: 1.0),
-                                      _buildMetricRow(context, 'Total Earnings (Public)', '₹$earnings'),
+                                      _buildMetricRow(context, AppLocalizations.translate('total_earnings', locale), '₹$earnings'),
                                     ],
                                   ],
                                 ),
@@ -375,7 +377,7 @@ class _CustomerWorkerProfileScreenState extends ConsumerState<CustomerWorkerProf
 
                           // Portfolio Gallery
                           Text(
-                            'WORK PORTFOLIO GALLERY',
+                            AppLocalizations.translate('portfolio_gallery', locale),
                             style: TextStyle(fontSize: 15, fontWeight: FontWeight.w900, color: textCol),
                           ),
                           const SizedBox(height: 12),
@@ -392,7 +394,7 @@ class _CustomerWorkerProfileScreenState extends ConsumerState<CustomerWorkerProf
                                     ),
                                     child: Center(
                                       child: Text(
-                                        'PHOTOS (${portfolioImages.length})',
+                                        '${AppLocalizations.translate('photos', locale).toUpperCase()} (${portfolioImages.length})',
                                         style: TextStyle(
                                           color: _selectedMediaTab == 0 ? Colors.white : Colors.black,
                                           fontWeight: FontWeight.w900,
@@ -415,7 +417,7 @@ class _CustomerWorkerProfileScreenState extends ConsumerState<CustomerWorkerProf
                                     ),
                                     child: Center(
                                       child: Text(
-                                        'VIDEOS (${portfolioVideos.length})',
+                                        '${AppLocalizations.translate('videos', locale).toUpperCase()} (${portfolioVideos.length})',
                                         style: TextStyle(
                                           color: _selectedMediaTab == 1 ? Colors.white : Colors.black,
                                           fontWeight: FontWeight.w900,
@@ -435,10 +437,10 @@ class _CustomerWorkerProfileScreenState extends ConsumerState<CustomerWorkerProf
                                 color: Colors.white,
                                 shadowOffset: 3.0,
                                 padding: const EdgeInsets.all(16),
-                                child: const Center(
+                                child: Center(
                                   child: Text(
-                                    'NO PORTFOLIO PHOTOS UPLOADED YET',
-                                    style: TextStyle(fontSize: 12, fontWeight: FontWeight.w900, color: AppColors.textMuted),
+                                    AppLocalizations.translate('no_photos_yet', locale),
+                                    style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w900, color: AppColors.textMuted),
                                   ),
                                 ),
                               )
@@ -479,10 +481,10 @@ class _CustomerWorkerProfileScreenState extends ConsumerState<CustomerWorkerProf
                                 color: Colors.white,
                                 shadowOffset: 3.0,
                                 padding: const EdgeInsets.all(16),
-                                child: const Center(
+                                child: Center(
                                   child: Text(
-                                    'NO PORTFOLIO VIDEOS UPLOADED YET',
-                                    style: TextStyle(fontSize: 12, fontWeight: FontWeight.w900, color: AppColors.textMuted),
+                                    AppLocalizations.translate('no_videos_yet', locale),
+                                    style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w900, color: AppColors.textMuted),
                                   ),
                                 ),
                               )
@@ -528,7 +530,7 @@ class _CustomerWorkerProfileScreenState extends ConsumerState<CustomerWorkerProf
                                                   ),
                                                   const SizedBox(height: 2),
                                                   Text(
-                                                    'DURATION: $duration • TAP TO PLAY VIDEO STREAM',
+                                                    '${AppLocalizations.translate('duration', locale)}: $duration • ${AppLocalizations.translate('tap_to_play', locale)}',
                                                     style: const TextStyle(fontSize: 9, color: AppColors.textMuted, fontWeight: FontWeight.bold),
                                                   ),
                                                 ],
@@ -568,7 +570,7 @@ class _CustomerWorkerProfileScreenState extends ConsumerState<CustomerWorkerProf
                         crossAxisAlignment: CrossAxisAlignment.start,
                         mainAxisSize: MainAxisSize.min,
                         children: [
-                          const Text('ESTIMATED PRICING', style: TextStyle(fontSize: 9, fontWeight: FontWeight.w900, color: AppColors.textMuted)),
+                          Text(AppLocalizations.translate('estimated_pricing', locale), style: const TextStyle(fontSize: 9, fontWeight: FontWeight.w900, color: AppColors.textMuted)),
                           Text(
                             '₹$pricePerHour/HOUR',
                             style: TextStyle(fontSize: isSmall ? 16 : 18, fontWeight: FontWeight.w900, color: Colors.black),
@@ -609,7 +611,7 @@ class _CustomerWorkerProfileScreenState extends ConsumerState<CustomerWorkerProf
                         child: Padding(
                           padding: EdgeInsets.symmetric(horizontal: isSmall ? 24 : 32, vertical: 12),
                           child: Text(
-                            'BOOK NOW',
+                            AppLocalizations.translate('book_now', locale),
                             style: TextStyle(fontWeight: FontWeight.w900, fontSize: isSmall ? 12 : 14, color: Colors.black),
                           ),
                         ),
@@ -867,6 +869,7 @@ class _CustomerBookingScreenState extends State<CustomerBookingScreen> {
   Widget build(BuildContext context) {
     return Consumer(
       builder: (context, ref, child) {
+        final locale = ref.watch(localeProvider);
         final isDark = Theme.of(context).brightness == Brightness.dark;
         final textCol = isDark ? Colors.white : Colors.black;
         final navState = ref.watch(navigationProvider);
@@ -879,7 +882,7 @@ class _CustomerBookingScreenState extends State<CustomerBookingScreen> {
 
         return Scaffold(
           appBar: AppBar(
-            title: const Text('DESCRIBE JOB'),
+            title: Text(AppLocalizations.translate('job_details', locale)),
             leading: IconButton(
               icon: Icon(Icons.arrow_back_rounded, color: textCol),
               onPressed: () {
@@ -927,7 +930,7 @@ class _CustomerBookingScreenState extends State<CustomerBookingScreen> {
                   const SizedBox(height: 28),
 
                   // Select Date
-                  Text('SELECT DATE', style: TextStyle(fontSize: 14, fontWeight: FontWeight.w900, color: textCol)),
+                  Text(AppLocalizations.translate('select_date', locale), style: TextStyle(fontSize: 14, fontWeight: FontWeight.w900, color: textCol)),
                   const SizedBox(height: 12),
                   SizedBox(
                     height: 50,
@@ -964,7 +967,7 @@ class _CustomerBookingScreenState extends State<CustomerBookingScreen> {
                   const SizedBox(height: 24),
 
                   // Select Time Slot
-                  Text('SELECT TIME SLOT', style: TextStyle(fontSize: 14, fontWeight: FontWeight.w900, color: textCol)),
+                  Text(AppLocalizations.translate('select_time_slot', locale), style: TextStyle(fontSize: 14, fontWeight: FontWeight.w900, color: textCol)),
                   const SizedBox(height: 12),
                   SizedBox(
                     height: 50,
@@ -1001,14 +1004,14 @@ class _CustomerBookingScreenState extends State<CustomerBookingScreen> {
                   const SizedBox(height: 28),
 
                   // Job Questionnaire
-                  Text('JOB DETAILS', style: TextStyle(fontSize: 14, fontWeight: FontWeight.w900, color: textCol)),
+                  Text(AppLocalizations.translate('job_details', locale), style: TextStyle(fontSize: 14, fontWeight: FontWeight.w900, color: textCol)),
                   const SizedBox(height: 12),
                   TextField(
                     controller: _descController,
                     maxLines: 4,
                     style: TextStyle(color: textCol, fontWeight: FontWeight.bold, fontSize: 14),
-                    decoration: const InputDecoration(
-                      hintText: 'DESCRIBE THE ISSUE (E.G. LEAKING TAP, PIPE BLOCKAGE)...',
+                    decoration: InputDecoration(
+                      hintText: AppLocalizations.translate('describe_issue_placeholder', locale),
                     ),
                   ),
 
@@ -1021,13 +1024,13 @@ class _CustomerBookingScreenState extends State<CustomerBookingScreen> {
                       color: Colors.white,
                       shadowOffset: 2.0,
                       child: Padding(
-                        padding: EdgeInsets.all(16),
+                        padding: const EdgeInsets.all(16),
                         child: Row(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
                             Icon(Icons.add_a_photo_outlined, color: textCol),
-                            SizedBox(width: 8),
-                            Text('ADD JOB PHOTOS (OPTIONAL)', style: TextStyle(color: textCol, fontWeight: FontWeight.w900, fontSize: 12)),
+                            const SizedBox(width: 8),
+                            Text(AppLocalizations.translate('add_job_photos', locale), style: TextStyle(color: textCol, fontWeight: FontWeight.w900, fontSize: 12)),
                           ],
                         ),
                       ),
@@ -1050,15 +1053,15 @@ class _CustomerBookingScreenState extends State<CustomerBookingScreen> {
                           },
                         );
                       },
-                      child: const BrutalistCard(
+                      child: BrutalistCard(
                         color: Colors.black,
                         shadowOffset: 0,
                         child: Padding(
-                          padding: EdgeInsets.symmetric(vertical: 16),
+                          padding: const EdgeInsets.symmetric(vertical: 16),
                           child: Center(
                             child: Text(
-                              'PROCEED TO PAYMENT',
-                              style: TextStyle(color: AppColors.accent, fontWeight: FontWeight.w900, fontSize: 14),
+                              AppLocalizations.translate('proceed_to_payment', locale),
+                              style: const TextStyle(color: AppColors.accent, fontWeight: FontWeight.w900, fontSize: 14),
                             ),
                           ),
                         ),
@@ -1193,6 +1196,7 @@ class CustomerPaymentScreen extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final locale = ref.watch(localeProvider);
     final isDark = Theme.of(context).brightness == Brightness.dark;
     final textCol = isDark ? Colors.white : Colors.black;
     final navState = ref.watch(navigationProvider);
@@ -1206,7 +1210,7 @@ class CustomerPaymentScreen extends ConsumerWidget {
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('PAYMENT SUMMARY'),
+        title: Text(AppLocalizations.translate('payment_summary', locale)),
         leading: IconButton(
           icon: Icon(Icons.arrow_back_rounded, color: textCol),
           onPressed: () {
@@ -1220,7 +1224,7 @@ class CustomerPaymentScreen extends ConsumerWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text('JOB SUMMARY', style: TextStyle(fontSize: 14, fontWeight: FontWeight.w900, color: textCol)),
+              Text(AppLocalizations.translate('job_summary', locale), style: TextStyle(fontSize: 14, fontWeight: FontWeight.w900, color: textCol)),
               const SizedBox(height: 12),
               
               BrutalistCard(
@@ -1238,7 +1242,7 @@ class CustomerPaymentScreen extends ConsumerWidget {
 
               const SizedBox(height: 24),
 
-              Text('BILLING BREAKUP', style: TextStyle(fontSize: 14, fontWeight: FontWeight.w900, color: textCol)),
+              Text(AppLocalizations.translate('billing_breakup', locale), style: TextStyle(fontSize: 14, fontWeight: FontWeight.w900, color: textCol)),
               const SizedBox(height: 12),
 
               BrutalistCard(
@@ -1285,15 +1289,15 @@ class CustomerPaymentScreen extends ConsumerWidget {
                 width: double.infinity,
                 child: GestureDetector(
                   onTap: () => _showRazorpaySimulatedPopup(context, ref, worker, args),
-                  child: const BrutalistCard(
+                  child: BrutalistCard(
                     color: Colors.black,
                     shadowOffset: 0,
                     child: Padding(
-                      padding: EdgeInsets.symmetric(vertical: 16),
+                      padding: const EdgeInsets.symmetric(vertical: 16),
                       child: Center(
                         child: Text(
-                          'PROCEED TO CHECKOUT',
-                          style: TextStyle(color: AppColors.accent, fontWeight: FontWeight.w900, fontSize: 14),
+                          AppLocalizations.translate('proceed_to_checkout', locale),
+                          style: const TextStyle(color: AppColors.accent, fontWeight: FontWeight.w900, fontSize: 14),
                         ),
                       ),
                     ),
@@ -1361,6 +1365,7 @@ class _CustomerActiveBookingScreenState extends ConsumerState<CustomerActiveBook
 
   @override
   Widget build(BuildContext context) {
+    final locale = ref.watch(localeProvider);
     final isDark = Theme.of(context).brightness == Brightness.dark;
     final textCol = isDark ? Colors.white : Colors.black;
     final navState = ref.watch(navigationProvider);
@@ -1378,7 +1383,7 @@ class _CustomerActiveBookingScreenState extends ConsumerState<CustomerActiveBook
 
         return Scaffold(
           appBar: AppBar(
-            title: const Text('TRACK BOOKING'),
+            title: Text(AppLocalizations.translate('track_booking', locale)),
             actions: [
               IconButton(
                 icon: Icon(Icons.phone_outlined, color: textCol),

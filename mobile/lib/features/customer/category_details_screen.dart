@@ -7,6 +7,7 @@ import '../../core/router/router.dart';
 import '../../core/models/worker.dart';
 import '../../core/models/skills_data.dart';
 import '../auth/onboarding_screen.dart'; // import BrutalistCard
+import '../../core/utils/localization.dart';
 
 class CategoryDetailsScreen extends ConsumerStatefulWidget {
   const CategoryDetailsScreen({super.key});
@@ -20,6 +21,7 @@ class _CategoryDetailsScreenState extends ConsumerState<CategoryDetailsScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final locale = ref.watch(localeProvider);
     final isDark = Theme.of(context).brightness == Brightness.dark;
     final textCol = isDark ? Colors.white : Colors.black;
     final bgCol = isDark ? const Color(0xFF0E1116) : const Color(0xFFFFE600);
@@ -107,7 +109,7 @@ class _CategoryDetailsScreenState extends ConsumerState<CategoryDetailsScreen> {
 
               // Section 1: Choose a Skill
               Text(
-                'BROWSE SKILLS IN THIS CATEGORY',
+                AppLocalizations.translate('browse_skills', locale),
                 style: TextStyle(
                   fontSize: 14,
                   fontWeight: FontWeight.w900,
@@ -186,8 +188,8 @@ class _CategoryDetailsScreenState extends ConsumerState<CategoryDetailsScreen> {
                   Expanded(
                     child: Text(
                       _selectedSkill == null
-                          ? 'AVAILABLE PARTNERS'
-                          : 'PARTNERS SPECIALIZED IN: ${_selectedSkill!.toUpperCase()}',
+                          ? AppLocalizations.translate('available_partners', locale)
+                          : '${AppLocalizations.translate('available_partners', locale)} (${_selectedSkill!.toUpperCase()})',
                       overflow: TextOverflow.ellipsis,
                       maxLines: 1,
                       style: TextStyle(
@@ -206,7 +208,7 @@ class _CategoryDetailsScreenState extends ConsumerState<CategoryDetailsScreen> {
                         });
                       },
                       child: Text(
-                        'CLEAR FILTER',
+                        AppLocalizations.translate('clear_filter', locale),
                         style: TextStyle(
                           fontSize: 11,
                           fontWeight: FontWeight.w900,
@@ -237,7 +239,7 @@ class _CategoryDetailsScreenState extends ConsumerState<CategoryDetailsScreen> {
 
                   final docs = snapshot.data?.docs ?? [];
                   if (docs.isEmpty) {
-                    return _buildNoWorkersCard(context, category.name);
+                    return _buildNoWorkersCard(context, category.name, locale);
                   }
 
                   final List<Worker> allWorkersInCategory = [];
@@ -272,7 +274,7 @@ class _CategoryDetailsScreenState extends ConsumerState<CategoryDetailsScreen> {
                   }
 
                   if (allWorkersInCategory.isEmpty) {
-                    return _buildNoWorkersCard(context, category.name);
+                    return _buildNoWorkersCard(context, category.name, locale);
                   }
 
                   // Apply filter based on selectedSkill
@@ -331,7 +333,7 @@ class _CategoryDetailsScreenState extends ConsumerState<CategoryDetailsScreen> {
     );
   }
 
-  Widget _buildNoWorkersCard(BuildContext context, String categoryName) {
+  Widget _buildNoWorkersCard(BuildContext context, String categoryName, String locale) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
     final textCol = isDark ? Colors.white : Colors.black;
     return BrutalistCard(
@@ -344,7 +346,7 @@ class _CategoryDetailsScreenState extends ConsumerState<CategoryDetailsScreen> {
             Icon(Icons.people_outline_rounded, size: 40, color: textCol),
             const SizedBox(height: 12),
             Text(
-              'NO ACTIVE PARTNERS IN $categoryName',
+              '${AppLocalizations.translate('no_active_partners', locale)} IN ${categoryName.toUpperCase()}',
               textAlign: TextAlign.center,
               style: TextStyle(
                 fontSize: 14,

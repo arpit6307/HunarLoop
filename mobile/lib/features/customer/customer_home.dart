@@ -188,7 +188,7 @@ class CustomerHomeScreen extends ConsumerWidget {
   }
 }
 
-void _promptLocationPermission(BuildContext context, String uid) {
+void _promptLocationPermission(BuildContext context, String uid, String locale) {
   final isDark = Theme.of(context).brightness == Brightness.dark;
   final bgCol = isDark ? const Color(0xFF1E1E1E) : Colors.white;
   final borderCol = isDark ? Colors.white : Colors.black;
@@ -208,13 +208,13 @@ void _promptLocationPermission(BuildContext context, String uid) {
           Icon(Icons.location_on, color: textCol),
           const SizedBox(width: 8),
           Text(
-            'LOCATION ACCESS',
+            AppLocalizations.translate('location_access_title', locale),
             style: TextStyle(fontWeight: FontWeight.w900, fontSize: 16, color: textCol),
           ),
         ],
       ),
       content: Text(
-        'ALLOW HUNARLOOP TO ACCESS YOUR DEVICE LOCATION TO MATCH YOU WITH NEARBY SERVICES?',
+        AppLocalizations.translate('location_access_desc', locale),
         style: TextStyle(fontWeight: FontWeight.bold, fontSize: 12, color: textCol),
       ),
       actions: [
@@ -226,14 +226,14 @@ void _promptLocationPermission(BuildContext context, String uid) {
             }, SetOptions(merge: true));
             if (context.mounted) {
               ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(
-                  content: Text('LOCATION ACCESS DENIED. YOU CAN ENABLE IT IN SETTINGS.'),
+                SnackBar(
+                  content: Text(AppLocalizations.translate('location_denied_snack', locale)),
                   backgroundColor: Colors.black,
                 ),
               );
             }
           },
-          child: const Text('DON\'T ALLOW', style: TextStyle(color: Colors.red, fontWeight: FontWeight.bold)),
+          child: Text(AppLocalizations.translate('dont_allow', locale), style: const TextStyle(color: Colors.red, fontWeight: FontWeight.bold)),
         ),
         TextButton(
           onPressed: () async {
@@ -243,14 +243,14 @@ void _promptLocationPermission(BuildContext context, String uid) {
             }, SetOptions(merge: true));
             if (context.mounted) {
               ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(
-                  content: Text('LOCATION ACCESS ALLOWED. LOCATION ENABLED IN SETTINGS!'),
+                SnackBar(
+                  content: Text(AppLocalizations.translate('location_allowed_snack', locale)),
                   backgroundColor: Colors.black,
                 ),
               );
             }
           },
-          child: Text('ALLOW', style: TextStyle(color: textCol, fontWeight: FontWeight.w900)),
+          child: Text(AppLocalizations.translate('allow', locale), style: TextStyle(color: textCol, fontWeight: FontWeight.w900)),
         ),
       ],
     ),
@@ -272,6 +272,7 @@ class CustomerHomeTabView extends ConsumerWidget {
     final displayName = userProfile?.name.toUpperCase() ?? 'GUEST USER';
     final screenW = MediaQuery.of(context).size.width;
     final isSmall = screenW < 360;
+    final locale = ref.watch(localeProvider);
 
     return StreamBuilder<DocumentSnapshot>(
       stream: FirebaseFirestore.instance.collection('users').doc(uid).snapshots(),
@@ -282,7 +283,7 @@ class CustomerHomeTabView extends ConsumerWidget {
         if (uid != 'guest' && userSnapshot.hasData && userSnapshot.data!.exists) {
           if (settings['locationAccess'] == null) {
             WidgetsBinding.instance.addPostFrameCallback((_) {
-              _promptLocationPermission(context, uid);
+              _promptLocationPermission(context, uid, locale);
             });
           }
         }
@@ -322,7 +323,7 @@ class CustomerHomeTabView extends ConsumerWidget {
                                 children: [
                                   Flexible(
                                     child: Text(
-                                      locationAccess ? 'HAZRATGANJ, LUCKNOW' : 'LOCATION DISABLED',
+                                      locationAccess ? 'HAZRATGANJ, LUCKNOW' : AppLocalizations.translate('location_disabled', locale),
                                       overflow: TextOverflow.ellipsis,
                                       maxLines: 1,
                                       style: TextStyle(
@@ -336,7 +337,7 @@ class CustomerHomeTabView extends ConsumerWidget {
                                 ],
                               ),
                               Text(
-                                locationAccess ? 'UTTAR PRADESH' : 'BLOCKED IN SETTINGS',
+                                locationAccess ? 'UTTAR PRADESH' : '${AppLocalizations.translate('blocked', locale)} (${AppLocalizations.translate('settings', locale).toUpperCase()})',
                                 style: const TextStyle(
                                   fontSize: 10,
                                   fontWeight: FontWeight.bold,
@@ -379,7 +380,7 @@ class CustomerHomeTabView extends ConsumerWidget {
                       children: [
                         Expanded(
                           child: Text(
-                            'NAMASTE, $displayName!',
+                            '${AppLocalizations.translate('welcome_back', locale).toUpperCase()}, $displayName!',
                             style: TextStyle(
                               fontSize: isSmall ? 18 : 24,
                               fontWeight: FontWeight.w900,
@@ -399,7 +400,7 @@ class CustomerHomeTabView extends ConsumerWidget {
                     ),
                     const SizedBox(height: 6),
                     Text(
-                      'READY TO WORK OR HIRE TODAY?',
+                      AppLocalizations.translate('find_workers', locale),
                       style: TextStyle(
                         fontSize: 11,
                         fontWeight: FontWeight.w900,
@@ -414,7 +415,7 @@ class CustomerHomeTabView extends ConsumerWidget {
 
               // Categories Header
               Text(
-                'BROWSE SKILLS BY CATEGORY',
+                AppLocalizations.translate('browse_skills', locale),
                 style: TextStyle(fontSize: 16, fontWeight: FontWeight.w900, color: textCol),
               ),
               const SizedBox(height: 12),
@@ -427,7 +428,7 @@ class CustomerHomeTabView extends ConsumerWidget {
                   itemCount: allCategories.length,
                   itemBuilder: (context, index) {
                     final cat = allCategories[index];
-                    return _buildCategoryItem(context, ref, cat);
+                    return _buildCategoryItem(context, ref, cat, locale);
                   },
                 ),
               ),
@@ -436,7 +437,7 @@ class CustomerHomeTabView extends ConsumerWidget {
 
               // Recommended matches
               Text(
-                'AI SMART MATCHES NEAR YOU',
+                AppLocalizations.translate('smart_matches', locale),
                 style: TextStyle(fontSize: 16, fontWeight: FontWeight.w900, color: textCol),
               ),
               const SizedBox(height: 16),
@@ -448,7 +449,7 @@ class CustomerHomeTabView extends ConsumerWidget {
                     .snapshots(),
                 builder: (context, snapshot) {
                   if (snapshot.hasError) {
-                    return const Text('ERROR LOADING MATCHES');
+                    return Text(AppLocalizations.translate('error_loading_matches', locale));
                   }
                   if (snapshot.connectionState == ConnectionState.waiting) {
                     return Center(child: CircularProgressIndicator(color: textCol));
@@ -502,19 +503,19 @@ class CustomerHomeTabView extends ConsumerWidget {
                           children: [
                             const Icon(Icons.people_outline_rounded, size: 48, color: Colors.black),
                             const SizedBox(height: 12),
-                            const Text(
-                              'NO ACTIVE PARTNERS YET',
-                              style: TextStyle(
+                            Text(
+                              AppLocalizations.translate('no_active_partners', locale),
+                              style: const TextStyle(
                                 fontSize: 16,
                                 fontWeight: FontWeight.w900,
                                 color: Colors.black,
                               ),
                             ),
                             const SizedBox(height: 8),
-                            const Text(
-                              'Be the first to register as a worker or check back soon!',
+                            Text(
+                              AppLocalizations.translate('no_active_partners_desc', locale),
                               textAlign: TextAlign.center,
-                              style: TextStyle(
+                              style: const TextStyle(
                                 fontSize: 12,
                                 fontWeight: FontWeight.bold,
                                 color: Colors.black87,
@@ -527,7 +528,7 @@ class CustomerHomeTabView extends ConsumerWidget {
                   }
 
                   return Column(
-                    children: workers.map((worker) => _buildWorkerCard(context, ref, worker, locationAccess)).toList(),
+                    children: workers.map((worker) => _buildWorkerCard(context, ref, worker, locationAccess, locale)).toList(),
                   );
                 },
               ),
@@ -540,7 +541,7 @@ class CustomerHomeTabView extends ConsumerWidget {
     );
   }
 
-  Widget _buildCategoryItem(BuildContext context, WidgetRef ref, CategoryInfo category) {
+  Widget _buildCategoryItem(BuildContext context, WidgetRef ref, CategoryInfo category, String locale) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
     final textCol = isDark ? Colors.white : Colors.black;
     return Container(
@@ -567,7 +568,7 @@ class CustomerHomeTabView extends ConsumerWidget {
           ),
           const SizedBox(height: 10),
           Text(
-            category.name,
+            AppLocalizations.translateCategory(category.name, locale),
             maxLines: 1,
             overflow: TextOverflow.ellipsis,
             textAlign: TextAlign.center,
@@ -578,7 +579,7 @@ class CustomerHomeTabView extends ConsumerWidget {
     );
   }
 
-  Widget _buildWorkerCard(BuildContext context, WidgetRef ref, Worker worker, bool locationAccess) {
+  Widget _buildWorkerCard(BuildContext context, WidgetRef ref, Worker worker, bool locationAccess, String locale) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
     final textCol = isDark ? Colors.white : Colors.black;
     final screenW = MediaQuery.of(context).size.width;
@@ -660,7 +661,7 @@ class CustomerHomeTabView extends ConsumerWidget {
                         padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 3),
                         color: Colors.black,
                         child: Text(
-                          'SCORE: ${worker.hunarScore}',
+                          '${AppLocalizations.translate('hunar_score', locale).toUpperCase()}: ${worker.hunarScore}',
                           style: const TextStyle(
                             fontSize: 8,
                             fontWeight: FontWeight.w900,
@@ -672,7 +673,7 @@ class CustomerHomeTabView extends ConsumerWidget {
                   ),
                   const SizedBox(height: 4),
                   Text(
-                    '${worker.category.toUpperCase()} • ${worker.experienceYears.toUpperCase()} EXP',
+                    '${AppLocalizations.translateCategory(worker.category, locale).toUpperCase()} • ${worker.experienceYears.toUpperCase()} EXP',
                     overflow: TextOverflow.ellipsis,
                     maxLines: 1,
                     style: TextStyle(
@@ -699,7 +700,7 @@ class CustomerHomeTabView extends ConsumerWidget {
                       const SizedBox(width: 2),
                       Flexible(
                         child: Text(
-                          locationAccess ? '${worker.distanceKm} KM' : 'BLOCKED',
+                          locationAccess ? '${worker.distanceKm} KM' : AppLocalizations.translate('blocked', locale),
                           overflow: TextOverflow.ellipsis,
                           maxLines: 1,
                           style: const TextStyle(fontSize: 10, color: AppColors.textMuted, fontWeight: FontWeight.bold),
@@ -744,6 +745,7 @@ class _CustomerSearchTabViewState extends ConsumerState<CustomerSearchTabView> {
     final query = ref.watch(searchFilterProvider);
     final userProfile = ref.watch(userProfileProvider);
     final uid = userProfile?.uid ?? FirebaseAuth.instance.currentUser?.uid ?? 'guest';
+    final locale = ref.watch(localeProvider);
 
     return StreamBuilder<DocumentSnapshot>(
       stream: FirebaseFirestore.instance.collection('users').doc(uid).snapshots(),
@@ -759,7 +761,7 @@ class _CustomerSearchTabViewState extends ConsumerState<CustomerSearchTabView> {
               .snapshots(),
           builder: (context, snapshot) {
             if (snapshot.hasError) {
-              return const Center(child: Text('ERROR LOADING SEARCH RESULTS'));
+              return Center(child: Text(AppLocalizations.translate('error_loading_search_results', locale)));
             }
             if (snapshot.connectionState == ConnectionState.waiting) {
               return Center(child: CircularProgressIndicator(color: textCol));
@@ -840,12 +842,12 @@ class _CustomerSearchTabViewState extends ConsumerState<CustomerSearchTabView> {
                           child: TextField(
                             controller: _searchController,
                             style: TextStyle(color: textCol, fontWeight: FontWeight.bold),
-                            decoration: const InputDecoration(
-                              hintText: 'SEARCH SERVICES...',
+                            decoration: InputDecoration(
+                              hintText: AppLocalizations.translate('search_skills', locale).toUpperCase(),
                               border: InputBorder.none,
                               enabledBorder: InputBorder.none,
                               focusedBorder: InputBorder.none,
-                              contentPadding: EdgeInsets.symmetric(vertical: 14),
+                              contentPadding: const EdgeInsets.symmetric(vertical: 14),
                             ),
                             onChanged: (val) {
                               ref.read(searchFilterProvider.notifier).setFilter(val.trim());
@@ -898,7 +900,7 @@ class _CustomerSearchTabViewState extends ConsumerState<CustomerSearchTabView> {
                                   ),
                                   const SizedBox(width: 6),
                                   Text(
-                                    cat.name.toUpperCase(),
+                                    AppLocalizations.translateCategory(cat.name, locale).toUpperCase(),
                                     style: TextStyle(
                                       color: isSelected ? Colors.black : textCol,
                                       fontWeight: FontWeight.w900,
@@ -915,7 +917,7 @@ class _CustomerSearchTabViewState extends ConsumerState<CustomerSearchTabView> {
                   ),
                   const SizedBox(height: 24),
                   Text(
-                    'AVAILABLE PARTNERS (${workers.length})',
+                    '${AppLocalizations.translate('available_partners', locale).toUpperCase()} (${workers.length})',
                     style: TextStyle(fontWeight: FontWeight.w900, fontSize: 15, color: textCol),
                   ),
                   const SizedBox(height: 16),
@@ -923,7 +925,7 @@ class _CustomerSearchTabViewState extends ConsumerState<CustomerSearchTabView> {
                     child: workers.isEmpty
                         ? Center(
                             child: Text(
-                              'NO LOCAL PARTNERS FOUND',
+                              AppLocalizations.translate('no_local_partners_found', locale).toUpperCase(),
                               style: TextStyle(fontWeight: FontWeight.w900, color: textCol),
                             ),
                           )
@@ -999,7 +1001,7 @@ class _CustomerSearchTabViewState extends ConsumerState<CustomerSearchTabView> {
                                             ),
                                             const SizedBox(height: 4),
                                             Text(
-                                              '${worker.category.toUpperCase()} • ${worker.experienceYears.toUpperCase()} EXP',
+                                              '${AppLocalizations.translateCategory(worker.category, locale).toUpperCase()} • ${worker.experienceYears.toUpperCase()} EXP',
                                               overflow: TextOverflow.ellipsis,
                                               maxLines: 1,
                                               style: TextStyle(fontSize: isSmall ? 10 : 11, color: AppColors.textMuted, fontWeight: FontWeight.bold),
@@ -1018,7 +1020,7 @@ class _CustomerSearchTabViewState extends ConsumerState<CustomerSearchTabView> {
                                                 const SizedBox(width: 2),
                                                 Flexible(
                                                   child: Text(
-                                                    locationAccess ? '${worker.distanceKm} KM' : 'BLOCKED',
+                                                    locationAccess ? '${worker.distanceKm} KM' : AppLocalizations.translate('blocked', locale).toUpperCase(),
                                                     overflow: TextOverflow.ellipsis,
                                                     maxLines: 1,
                                                     style: const TextStyle(fontSize: 10, color: AppColors.textMuted, fontWeight: FontWeight.bold),
@@ -1029,7 +1031,7 @@ class _CustomerSearchTabViewState extends ConsumerState<CustomerSearchTabView> {
                                                   padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 3),
                                                   color: Colors.black,
                                                   child: Text(
-                                                    'SCORE: ${worker.hunarScore}',
+                                                    '${AppLocalizations.translate('hunar_score', locale).toUpperCase()}: ${worker.hunarScore}',
                                                     style: const TextStyle(fontSize: 8, fontWeight: FontWeight.w900, color: AppColors.accent),
                                                   ),
                                                 ),
@@ -1069,6 +1071,7 @@ class CustomerBookingsTabView extends ConsumerWidget {
     final uid = userProfile?.uid ?? 'guest';
     final screenW = MediaQuery.of(context).size.width;
     final isSmall = screenW < 360;
+    final locale = ref.watch(localeProvider);
 
     return StreamBuilder<QuerySnapshot>(
       stream: FirebaseFirestore.instance
@@ -1080,13 +1083,13 @@ class CustomerBookingsTabView extends ConsumerWidget {
           return Center(child: CircularProgressIndicator(color: textCol));
         }
         if (snapshot.hasError) {
-          return const Center(child: Text('ERROR LOADING BOOKINGS'));
+          return Center(child: Text(AppLocalizations.translate('error_loading_bookings', locale)));
         }
         final docs = snapshot.data?.docs ?? [];
         if (docs.isEmpty) {
           return Center(
             child: Text(
-              'NO ACTIVE BOOKINGS YET',
+              AppLocalizations.translate('no_active_bookings', locale),
               style: TextStyle(fontWeight: FontWeight.w900, color: textCol),
             ),
           );
@@ -1101,7 +1104,7 @@ class CustomerBookingsTabView extends ConsumerWidget {
             children: [
               const SizedBox(height: 20),
               Text(
-                'YOUR ACTIVE BOOKINGS',
+                AppLocalizations.translate('active_bookings', locale),
                 style: TextStyle(fontWeight: FontWeight.w900, fontSize: isSmall ? 14 : 16, color: textCol),
               ),
               const SizedBox(height: 16),
@@ -1127,7 +1130,7 @@ class CustomerBookingsTabView extends ConsumerWidget {
                               children: [
                                 Flexible(
                                   child: Text(
-                                    (item['workerName'] as String? ?? 'WORKER').toUpperCase(),
+                                    (item['workerName'] as String? ?? AppLocalizations.translate('worker', locale)).toUpperCase(),
                                     overflow: TextOverflow.ellipsis,
                                     maxLines: 1,
                                     style: TextStyle(fontWeight: FontWeight.w900, fontSize: isSmall ? 13 : 15, color: textCol),
@@ -1146,19 +1149,19 @@ class CustomerBookingsTabView extends ConsumerWidget {
                             ),
                             const SizedBox(height: 4),
                             Text(
-                              'SERVICE: ${(item['category'] as String? ?? '').toUpperCase()}',
+                              '${AppLocalizations.translate('service', locale).toUpperCase()}: ${AppLocalizations.translateCategory(item['category'] as String? ?? '', locale).toUpperCase()}',
                               overflow: TextOverflow.ellipsis,
                               maxLines: 1,
                               style: TextStyle(fontSize: isSmall ? 10 : 11, color: AppColors.textMuted, fontWeight: FontWeight.bold),
                             ),
                             Text(
-                              'SLOT: ${item['slot']}',
+                              '${AppLocalizations.translate('slot', locale).toUpperCase()}: ${item['slot']}',
                               overflow: TextOverflow.ellipsis,
                               maxLines: 1,
                               style: TextStyle(fontSize: isSmall ? 10 : 11, color: AppColors.textMuted, fontWeight: FontWeight.bold),
                             ),
                             Text(
-                              'TOTAL PRICE: ₹${item['price']} (HELD IN ESCROW)',
+                              '${AppLocalizations.translate('total_price', locale).toUpperCase()}: ₹${item['price']} (${AppLocalizations.translate('held_in_escrow', locale).toUpperCase()})',
                               overflow: TextOverflow.ellipsis,
                               maxLines: 1,
                               style: TextStyle(fontSize: isSmall ? 10 : 11, color: textCol, fontWeight: FontWeight.w900),
@@ -1169,10 +1172,10 @@ class CustomerBookingsTabView extends ConsumerWidget {
                                 color: Colors.green,
                                 shadowOffset: 0,
                                 padding: const EdgeInsets.symmetric(vertical: 8),
-                                child: const Center(
+                                child: Center(
                                   child: Text(
-                                    'PAYOUT RELEASED',
-                                    style: TextStyle(color: Colors.white, fontSize: 11, fontWeight: FontWeight.w900),
+                                    AppLocalizations.translate('payout_released', locale).toUpperCase(),
+                                    style: const TextStyle(color: Colors.white, fontSize: 11, fontWeight: FontWeight.w900),
                                   ),
                                 ),
                               ),
@@ -1210,8 +1213,8 @@ class CustomerBookingsTabView extends ConsumerWidget {
                                         color: AppColors.accent,
                                         shadowOffset: 3.0,
                                         padding: const EdgeInsets.symmetric(vertical: 8),
-                                        child: const Center(
-                                          child: Text('TRACK LOCATION', style: TextStyle(fontSize: 10, fontWeight: FontWeight.w900)),
+                                        child: Center(
+                                          child: Text(AppLocalizations.translate('track_location', locale).toUpperCase(), style: const TextStyle(fontSize: 10, fontWeight: FontWeight.w900)),
                                         ),
                                       ),
                                     ),
@@ -1229,8 +1232,8 @@ class CustomerBookingsTabView extends ConsumerWidget {
                                         }
                                         if (!context.mounted) return;
                                         ScaffoldMessenger.of(context).showSnackBar(
-                                          const SnackBar(
-                                            content: Text('ESCROW RELEASED SUCCESSFULLY!'),
+                                          SnackBar(
+                                            content: Text(AppLocalizations.translate('escrow_released_snack', locale).toUpperCase()),
                                             backgroundColor: Colors.black,
                                           ),
                                         );
@@ -1238,10 +1241,10 @@ class CustomerBookingsTabView extends ConsumerWidget {
                                       color: Colors.black,
                                       shadowOffset: 3.0,
                                       padding: const EdgeInsets.symmetric(vertical: 8),
-                                      child: const Center(
+                                      child: Center(
                                         child: Text(
-                                          'RELEASE PAYOUT',
-                                          style: TextStyle(color: AppColors.accent, fontSize: 10, fontWeight: FontWeight.w900),
+                                          AppLocalizations.translate('release_payout', locale).toUpperCase(),
+                                          style: const TextStyle(color: AppColors.accent, fontSize: 10, fontWeight: FontWeight.w900),
                                         ),
                                       ),
                                     ),
@@ -1285,6 +1288,7 @@ class CustomerChatTabView extends ConsumerWidget {
     final textCol = isDark ? Colors.white : Colors.black;
     final userProfile = ref.watch(userProfileProvider);
     final uid = userProfile?.uid ?? 'guest';
+    final locale = ref.watch(localeProvider);
 
     return StreamBuilder<QuerySnapshot>(
       stream: FirebaseFirestore.instance
@@ -1296,13 +1300,13 @@ class CustomerChatTabView extends ConsumerWidget {
           return Center(child: CircularProgressIndicator(color: textCol));
         }
         if (snapshot.hasError) {
-          return const Center(child: Text('ERROR LOADING CHAT CHANNELS'));
+          return Center(child: Text(AppLocalizations.translate('error_loading_chats', locale)));
         }
         final docs = snapshot.data?.docs ?? [];
         if (docs.isEmpty) {
           return Center(
             child: Text(
-              'NO ACTIVE CHATS YET',
+              AppLocalizations.translate('no_active_chats', locale),
               style: TextStyle(fontWeight: FontWeight.w900, color: textCol),
             ),
           );
@@ -1316,8 +1320,8 @@ class CustomerChatTabView extends ConsumerWidget {
             children: [
               const SizedBox(height: 20),
               Text(
-                'CHAT MESSAGES',
-                style: TextStyle(fontWeight: FontWeight.w900, fontSize: 16, color: Colors.black),
+                AppLocalizations.translate('chat_messages', locale),
+                style: TextStyle(fontWeight: FontWeight.w900, fontSize: 16, color: textCol),
               ),
               const SizedBox(height: 16),
               Expanded(
@@ -1325,9 +1329,9 @@ class CustomerChatTabView extends ConsumerWidget {
                   itemCount: docs.length,
                   itemBuilder: (context, index) {
                     final booking = docs[index].data() as Map<String, dynamic>;
-                    final workerName = booking['workerName'] ?? 'WORKER';
+                    final workerName = booking['workerName'] ?? AppLocalizations.translate('worker', locale);
                     final chatId = booking['bookingId'] ?? docs[index].id;
-                    final category = booking['category'] ?? 'SERVICE';
+                    final category = booking['category'] ?? AppLocalizations.translate('service', locale);
 
                     return Container(
                       margin: const EdgeInsets.only(bottom: 12),
@@ -1366,7 +1370,7 @@ class CustomerChatTabView extends ConsumerWidget {
                                         ),
                                         const SizedBox(width: 8),
                                         Text(
-                                          category.toString().toUpperCase(),
+                                          AppLocalizations.translateCategory(category.toString(), locale).toUpperCase(),
                                           style: const TextStyle(fontSize: 10, color: AppColors.textMuted, fontWeight: FontWeight.bold),
                                         ),
                                       ],
@@ -1381,7 +1385,7 @@ class CustomerChatTabView extends ConsumerWidget {
                                           .limit(1)
                                           .snapshots(),
                                       builder: (context, msgSnapshot) {
-                                        String lastMsg = 'TAP TO CHAT WITH PARTNER';
+                                        String lastMsg = AppLocalizations.translate('tap_to_chat', locale);
                                         if (msgSnapshot.hasData && msgSnapshot.data!.docs.isNotEmpty) {
                                           lastMsg = msgSnapshot.data!.docs.first.get('text') ?? '';
                                         }
@@ -1448,6 +1452,7 @@ class _ChatRoomScreenState extends ConsumerState<ChatRoomScreen> {
     final isDark = Theme.of(context).brightness == Brightness.dark;
     final textCol = isDark ? Colors.white : Colors.black;
     final myEmail = ref.watch(userProfileProvider)?.email ?? FirebaseAuth.instance.currentUser?.email ?? 'customer@hunarloop.in';
+    final locale = ref.watch(localeProvider);
 
     return Scaffold(
       appBar: AppBar(
@@ -1525,8 +1530,8 @@ class _ChatRoomScreenState extends ConsumerState<ChatRoomScreen> {
                     child: TextField(
                       controller: _msgController,
                       style: TextStyle(color: textCol, fontWeight: FontWeight.bold),
-                      decoration: const InputDecoration(
-                        hintText: 'TYPE MESSAGE HERE...',
+                      decoration: InputDecoration(
+                        hintText: AppLocalizations.translate('type_message_placeholder', locale).toUpperCase(),
                         border: InputBorder.none,
                         enabledBorder: InputBorder.none,
                         focusedBorder: InputBorder.none,
@@ -1582,8 +1587,42 @@ class _CustomerProfileTabViewState extends ConsumerState<CustomerProfileTabView>
   String? _idCardPhotoBackBase64;
   bool _isSubmittingId = false;
   bool _showIdNumber = false;
-
   StreamSubscription<DocumentSnapshot>? _settingsSubscription;
+
+  String getLocalizedContact(String contact, String locale) {
+    final cLower = contact.toLowerCase();
+    if (cLower.contains('chat')) {
+      return AppLocalizations.translate('contact_in_app_chat', locale);
+    }
+    if (cLower.contains('phone')) {
+      return AppLocalizations.translate('contact_phone_calls', locale);
+    }
+    if (cLower.contains('whatsapp') || cLower.contains('sms')) {
+      return AppLocalizations.translate('contact_whatsapp_sms', locale);
+    }
+    return contact.toUpperCase();
+  }
+
+  String getLocalizedSlot(String slot, String locale) {
+    if (slot.contains('Morning') || slot.toLowerCase().contains('morning')) {
+      return AppLocalizations.translate('slot_morning', locale);
+    }
+    if (slot.contains('Afternoon') || slot.toLowerCase().contains('afternoon')) {
+      return AppLocalizations.translate('slot_afternoon', locale);
+    }
+    if (slot.contains('Evening') || slot.toLowerCase().contains('evening')) {
+      return AppLocalizations.translate('slot_evening', locale);
+    }
+    return slot.toUpperCase();
+  }
+
+  String getIdTypeKey(String type) {
+    if (type == 'Aadhaar Card') return 'id_aadhaar';
+    if (type == 'PAN Card') return 'id_pan';
+    if (type == 'Voter ID') return 'id_voter';
+    if (type == 'Driving License') return 'id_dl';
+    return 'id_aadhaar';
+  }
 
   @override
   void initState() {
@@ -1660,6 +1699,7 @@ class _CustomerProfileTabViewState extends ConsumerState<CustomerProfileTabView>
   }
 
   void _showEditProfileDialog(BuildContext context, String uid, Map<String, dynamic> currentData, UserProfile? profile, WidgetRef ref) {
+    final locale = ref.read(localeProvider);
     final nameController = TextEditingController(text: currentData['name'] ?? profile?.name ?? '');
     final phoneController = TextEditingController(text: currentData['phone'] ?? profile?.phone ?? '');
     final addressController = TextEditingController(text: currentData['address'] ?? '');
@@ -1688,7 +1728,7 @@ class _CustomerProfileTabViewState extends ConsumerState<CustomerProfileTabView>
                 side: BorderSide(color: Colors.black, width: 3.0),
               ),
               title: Text(
-                'EDIT PROFILE DETAILS',
+                AppLocalizations.translate('edit_profile_details', locale),
                 style: TextStyle(fontWeight: FontWeight.w900, fontSize: 16, color: textCol),
               ),
               content: SingleChildScrollView(
@@ -1696,14 +1736,14 @@ class _CustomerProfileTabViewState extends ConsumerState<CustomerProfileTabView>
                   mainAxisSize: MainAxisSize.min,
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    const Text('FULL NAME', style: TextStyle(fontWeight: FontWeight.w900, fontSize: 11)),
+                    Text(AppLocalizations.translate('full_name', locale), style: const TextStyle(fontWeight: FontWeight.w900, fontSize: 11)),
                     const SizedBox(height: 6),
                     TextField(
                       controller: nameController,
                       style: TextStyle(color: textCol, fontWeight: FontWeight.bold, fontSize: 14),
                     ),
                     const SizedBox(height: 14),
-                    const Text('PHONE NUMBER', style: TextStyle(fontWeight: FontWeight.w900, fontSize: 11)),
+                    Text(AppLocalizations.translate('phone', locale), style: const TextStyle(fontWeight: FontWeight.w900, fontSize: 11)),
                     const SizedBox(height: 6),
                     TextField(
                       controller: phoneController,
@@ -1711,7 +1751,7 @@ class _CustomerProfileTabViewState extends ConsumerState<CustomerProfileTabView>
                       style: TextStyle(color: textCol, fontWeight: FontWeight.bold, fontSize: 14),
                     ),
                     const SizedBox(height: 14),
-                    const Text('SERVICE ADDRESS', style: TextStyle(fontWeight: FontWeight.w900, fontSize: 11)),
+                    Text(AppLocalizations.translate('address', locale), style: const TextStyle(fontWeight: FontWeight.w900, fontSize: 11)),
                     const SizedBox(height: 6),
                     TextField(
                       controller: addressController,
@@ -1719,7 +1759,7 @@ class _CustomerProfileTabViewState extends ConsumerState<CustomerProfileTabView>
                       style: TextStyle(color: textCol, fontWeight: FontWeight.bold, fontSize: 14),
                     ),
                     const SizedBox(height: 14),
-                    const Text('PREFERRED CONTACT', style: TextStyle(fontWeight: FontWeight.w900, fontSize: 11)),
+                    Text(AppLocalizations.translate('contact_method', locale), style: const TextStyle(fontWeight: FontWeight.w900, fontSize: 11)),
                     const SizedBox(height: 6),
                     DropdownButtonFormField<String>(
                       initialValue: preferredContact,
@@ -1731,7 +1771,7 @@ class _CustomerProfileTabViewState extends ConsumerState<CustomerProfileTabView>
                       items: contactMethods.map((m) {
                         return DropdownMenuItem<String>(
                           value: m,
-                          child: Text(m.toUpperCase()),
+                          child: Text(getLocalizedContact(m, locale)),
                         );
                       }).toList(),
                       onChanged: (val) {
@@ -1743,7 +1783,7 @@ class _CustomerProfileTabViewState extends ConsumerState<CustomerProfileTabView>
                       },
                     ),
                     const SizedBox(height: 14),
-                    const Text('PREFERRED SLOT', style: TextStyle(fontWeight: FontWeight.w900, fontSize: 11)),
+                    Text(AppLocalizations.translate('preferred_slot', locale), style: const TextStyle(fontWeight: FontWeight.w900, fontSize: 11)),
                     const SizedBox(height: 6),
                     DropdownButtonFormField<String>(
                       initialValue: preferredSlot,
@@ -1755,7 +1795,7 @@ class _CustomerProfileTabViewState extends ConsumerState<CustomerProfileTabView>
                       items: slotOptions.map((s) {
                         return DropdownMenuItem<String>(
                           value: s,
-                          child: Text(s.toUpperCase()),
+                          child: Text(getLocalizedSlot(s, locale)),
                         );
                       }).toList(),
                       onChanged: (val) {
@@ -1772,7 +1812,7 @@ class _CustomerProfileTabViewState extends ConsumerState<CustomerProfileTabView>
               actions: [
                 TextButton(
                   onPressed: () => Navigator.pop(context),
-                  child: Text('CANCEL', style: TextStyle(color: textCol, fontWeight: FontWeight.bold)),
+                  child: Text(AppLocalizations.translate('cancel', locale), style: TextStyle(color: textCol, fontWeight: FontWeight.bold)),
                 ),
                 TextButton(
                   onPressed: () async {
@@ -1782,7 +1822,7 @@ class _CustomerProfileTabViewState extends ConsumerState<CustomerProfileTabView>
 
                     if (name.isEmpty || phone.isEmpty || address.isEmpty) {
                       ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(content: Text('PLEASE FILL ALL FIELDS'), backgroundColor: Colors.black),
+                        SnackBar(content: Text(AppLocalizations.translate('please_fill_all_fields', locale)), backgroundColor: Colors.black),
                       );
                       return;
                     }
@@ -1809,11 +1849,11 @@ class _CustomerProfileTabViewState extends ConsumerState<CustomerProfileTabView>
                     if (context.mounted) {
                       Navigator.pop(context);
                       ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(content: Text('PROFILE UPDATED SUCCESSFULLY!'), backgroundColor: Colors.black),
+                        SnackBar(content: Text(AppLocalizations.translate('profile_updated_snack', locale)), backgroundColor: Colors.black),
                       );
                     }
                   },
-                  child: Text('SAVE CHANGES', style: TextStyle(color: textCol, fontWeight: FontWeight.w900)),
+                  child: Text(AppLocalizations.translate('save_changes', locale), style: TextStyle(color: textCol, fontWeight: FontWeight.w900)),
                 ),
               ],
             );
@@ -1873,6 +1913,7 @@ class _CustomerProfileTabViewState extends ConsumerState<CustomerProfileTabView>
     final isDark = Theme.of(context).brightness == Brightness.dark;
     final bgCol = isDark ? const Color(0xFF1E1E1E) : Colors.white;
     final textCol = isDark ? Colors.white : Colors.black;
+    final locale = ref.read(localeProvider);
 
     final source = await showModalBottomSheet<String>(
       context: context,
@@ -1889,19 +1930,19 @@ class _CustomerProfileTabViewState extends ConsumerState<CustomerProfileTabView>
             mainAxisSize: MainAxisSize.min,
             children: [
               Text(
-                'SELECT ID PHOTO SOURCE',
+                AppLocalizations.translate('select_id_source_title', locale),
                 style: TextStyle(fontWeight: FontWeight.w900, fontSize: 13, color: textCol),
               ),
               const SizedBox(height: 16),
               ListTile(
                 leading: Icon(Icons.camera_alt_outlined, color: textCol),
-                title: Text('TAKE PHOTO (CAMERA)', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 12, color: textCol)),
+                title: Text(AppLocalizations.translate('take_photo', locale), style: TextStyle(fontWeight: FontWeight.bold, fontSize: 12, color: textCol)),
                 onTap: () => Navigator.pop(context, 'camera'),
               ),
               Divider(color: textCol, thickness: 1.5),
               ListTile(
                 leading: Icon(Icons.photo_library_outlined, color: textCol),
-                title: Text('CHOOSE FROM GALLERY', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 12, color: textCol)),
+                title: Text(AppLocalizations.translate('choose_gallery', locale), style: TextStyle(fontWeight: FontWeight.bold, fontSize: 12, color: textCol)),
                 onTap: () => Navigator.pop(context, 'gallery'),
               ),
             ],
@@ -1927,6 +1968,7 @@ class _CustomerProfileTabViewState extends ConsumerState<CustomerProfileTabView>
   }) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
     final bgCol = isDark ? const Color(0xFF1E1E1E) : Colors.white;
+    final locale = ref.read(localeProvider);
 
     return GestureDetector(
       onTap: onTap,
@@ -1970,9 +2012,9 @@ class _CustomerProfileTabViewState extends ConsumerState<CustomerProfileTabView>
                       style: const TextStyle(fontWeight: FontWeight.w900, fontSize: 10, color: Colors.black),
                     ),
                     const SizedBox(height: 2),
-                    const Text(
-                      'TAP TO CAPTURE OR UPLOAD PHOTO',
-                      style: TextStyle(fontWeight: FontWeight.bold, fontSize: 8, color: Colors.black54),
+                    Text(
+                      AppLocalizations.translate('tap_to_capture_id', locale),
+                      style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 8, color: Colors.black54),
                     ),
                   ],
                 ),
@@ -1983,23 +2025,24 @@ class _CustomerProfileTabViewState extends ConsumerState<CustomerProfileTabView>
 
   Future<void> _submitVerification(String uid) async {
     final idNo = _idController.text.trim();
+    final locale = ref.read(localeProvider);
     if (idNo.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('PLEASE ENTER A VALID ID NUMBER'), backgroundColor: Colors.black),
+        SnackBar(content: Text(AppLocalizations.translate('please_enter_id_number', locale)), backgroundColor: Colors.black),
       );
       return;
     }
     if (_idType == 'Aadhaar Card') {
       if (_idCardPhotoBase64 == null || _idCardPhotoBackBase64 == null) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('PLEASE UPLOAD BOTH FRONT AND BACK PHOTOS OF YOUR AADHAAR CARD'), backgroundColor: Colors.black),
+          SnackBar(content: Text(AppLocalizations.translate('please_upload_aadhaar_photos', locale)), backgroundColor: Colors.black),
         );
         return;
       }
     } else {
       if (_idCardPhotoBase64 == null) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('PLEASE UPLOAD A PHOTO OF YOUR ID CARD'), backgroundColor: Colors.black),
+          SnackBar(content: Text(AppLocalizations.translate('please_upload_id_photo', locale)), backgroundColor: Colors.black),
         );
         return;
       }
@@ -2017,7 +2060,7 @@ class _CustomerProfileTabViewState extends ConsumerState<CustomerProfileTabView>
       });
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('ID SUBMITTED FOR REVIEW!'), backgroundColor: Colors.black),
+        SnackBar(content: Text(AppLocalizations.translate('id_submitted_snack', locale)), backgroundColor: Colors.black),
       );
       _idController.clear();
       setState(() {
@@ -2027,7 +2070,7 @@ class _CustomerProfileTabViewState extends ConsumerState<CustomerProfileTabView>
     } catch (e) {
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('ERROR SUBMITTING ID: ${e.toString().toUpperCase()}'), backgroundColor: Colors.black),
+        SnackBar(content: Text('${AppLocalizations.translate('id_error_submitting_snack', locale)}${e.toString().toUpperCase()}'), backgroundColor: Colors.black),
       );
     } finally {
       setState(() => _isSubmittingId = false);
@@ -2061,6 +2104,15 @@ class _CustomerProfileTabViewState extends ConsumerState<CustomerProfileTabView>
         final avatarUrl = data['avatarUrl'] as String?;
         final isVerified = data['isVerified'] as bool? ?? false;
         final verificationStatus = data['verificationStatus'] ?? 'none';
+
+        final displayName = (name.toUpperCase() == 'GUEST USER' || name.toUpperCase() == 'GUEST')
+            ? AppLocalizations.translate('guest_user', locale)
+            : name;
+        final displayAddress = address.toUpperCase() == 'NOT ADDED YET'
+            ? AppLocalizations.translate('not_added_yet', locale)
+            : address;
+        final displayContact = getLocalizedContact(preferredContact, locale);
+        final displaySlot = getLocalizedSlot(preferredSlot, locale);
 
         return SingleChildScrollView(
           padding: EdgeInsets.all(isSmall ? 14.0 : 24.0),
@@ -2137,7 +2189,7 @@ class _CustomerProfileTabViewState extends ConsumerState<CustomerProfileTabView>
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
                         Text(
-                          name.toString().toUpperCase(),
+                          displayName.toString().toUpperCase(),
                           style: TextStyle(fontSize: isSmall ? 18 : 22, fontWeight: FontWeight.w900, color: textCol),
                         ),
                         if (isVerified || verificationStatus == 'approved') ...[
@@ -2165,19 +2217,19 @@ class _CustomerProfileTabViewState extends ConsumerState<CustomerProfileTabView>
                 padding: EdgeInsets.all(isSmall ? 12 : 16),
                 child: Column(
                   children: [
-                    _buildProfileDetailRow(context, 'PHONE', phone.toString().toUpperCase()),
+                    _buildProfileDetailRow(context, AppLocalizations.translate('phone', locale), phone.toString().toUpperCase()),
                     Divider(color: borderCol, thickness: 1.0),
                     _buildProfileDetailRow(
                       context,
-                      'ADDRESS',
-                      _locationAccess ? address.toString().toUpperCase() : 'BLOCKED IN SETTINGS',
+                      AppLocalizations.translate('address', locale),
+                      _locationAccess ? displayAddress.toString().toUpperCase() : AppLocalizations.translate('blocked_in_settings', locale),
                     ),
                     Divider(color: borderCol, thickness: 1.0),
-                    _buildProfileDetailRow(context, 'CONTACT METHOD', preferredContact.toString().toUpperCase()),
+                    _buildProfileDetailRow(context, AppLocalizations.translate('contact_method', locale), displayContact.toUpperCase()),
                     Divider(color: borderCol, thickness: 1.0),
-                    _buildProfileDetailRow(context, 'PREFERRED SLOT', preferredSlot.toString().toUpperCase()),
+                    _buildProfileDetailRow(context, AppLocalizations.translate('preferred_slot', locale), displaySlot.toUpperCase()),
                     Divider(color: borderCol, thickness: 1.0),
-                    _buildProfileDetailRow(context, 'ACCOUNT ROLE', 'CUSTOMER'),
+                    _buildProfileDetailRow(context, AppLocalizations.translate('account_role', locale), AppLocalizations.translate('role_customer', locale)),
                   ],
                 ),
               ),
@@ -2233,38 +2285,38 @@ class _CustomerProfileTabViewState extends ConsumerState<CustomerProfileTabView>
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
                           Text(
-                            'GOVERNMENT ID VERIFICATION',
+                            AppLocalizations.translate('government_id_verification', locale),
                             style: TextStyle(fontWeight: FontWeight.w900, color: textCol, fontSize: 12),
                           ),
                           if (isVerified || verificationStatus == 'approved')
                             Container(
                               padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                               color: Colors.blue,
-                              child: const Text('VERIFIED', style: TextStyle(color: Colors.white, fontWeight: FontWeight.w900, fontSize: 8)),
+                              child: Text(AppLocalizations.translate('verified', locale), style: const TextStyle(color: Colors.white, fontWeight: FontWeight.w900, fontSize: 8)),
                             )
                           else if (verificationStatus == 'pending')
                             Container(
                               padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                               color: Colors.orange,
-                              child: const Text('PENDING REVIEW', style: TextStyle(color: Colors.white, fontWeight: FontWeight.w900, fontSize: 8)),
+                              child: Text(AppLocalizations.translate('pending_review', locale), style: const TextStyle(color: Colors.white, fontWeight: FontWeight.w900, fontSize: 8)),
                             )
                           else if (verificationStatus == 'rejected')
                             Container(
                               padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                               color: Colors.red,
-                              child: const Text('REJECTED', style: TextStyle(color: Colors.white, fontWeight: FontWeight.w900, fontSize: 8)),
+                              child: Text(AppLocalizations.translate('rejected', locale), style: const TextStyle(color: Colors.white, fontWeight: FontWeight.w900, fontSize: 8)),
                             )
                           else
                             Container(
                               padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                               color: Colors.red,
-                              child: const Text('UNVERIFIED', style: TextStyle(color: Colors.white, fontWeight: FontWeight.w900, fontSize: 8)),
+                              child: Text(AppLocalizations.translate('unverified', locale), style: const TextStyle(color: Colors.white, fontWeight: FontWeight.w900, fontSize: 8)),
                             ),
                         ],
                       ),
                       const SizedBox(height: 6),
                       Text(
-                        'Verify your identity using Aadhaar or PAN card. This will unlock a verified badge and give you a higher Hunar Score.',
+                        AppLocalizations.translate('id_verification_desc', locale),
                         style: TextStyle(color: mutedTextCol, fontSize: 10, fontWeight: FontWeight.bold),
                       ),
                       const SizedBox(height: 16),
@@ -2278,7 +2330,7 @@ class _CustomerProfileTabViewState extends ConsumerState<CustomerProfileTabView>
                                 const Icon(Icons.check_circle_rounded, color: Colors.blue, size: 40),
                                 const SizedBox(height: 8),
                                 Text(
-                                  'YOUR ID WAS VERIFIED SUCCESSFULLY!',
+                                  AppLocalizations.translate('id_verified_success', locale),
                                   style: const TextStyle(fontWeight: FontWeight.w900, fontSize: 11, color: Colors.blue),
                                 ),
                                 const SizedBox(height: 12),
@@ -2292,7 +2344,7 @@ class _CustomerProfileTabViewState extends ConsumerState<CustomerProfileTabView>
                                     children: [
                                       Expanded(
                                         child: Text(
-                                          '${currentIdType.toUpperCase()}: ${maskIdNumber(idNumber, _showIdNumber)}',
+                                          '${AppLocalizations.translate(getIdTypeKey(currentIdType), locale)}: ${maskIdNumber(idNumber, _showIdNumber)}',
                                           style: TextStyle(fontWeight: FontWeight.w900, fontSize: 12, color: textCol),
                                         ),
                                       ),
@@ -2316,7 +2368,7 @@ class _CustomerProfileTabViewState extends ConsumerState<CustomerProfileTabView>
                                         onPressed: () {
                                           Clipboard.setData(ClipboardData(text: idNumber));
                                           ScaffoldMessenger.of(context).showSnackBar(
-                                            const SnackBar(content: Text('ID NUMBER COPIED TO CLIPBOARD'), backgroundColor: Colors.black),
+                                            SnackBar(content: Text(AppLocalizations.translate('id_copied_snack', locale)), backgroundColor: Colors.black),
                                           );
                                         },
                                         constraints: const BoxConstraints(),
@@ -2346,7 +2398,7 @@ class _CustomerProfileTabViewState extends ConsumerState<CustomerProfileTabView>
                                     children: [
                                       Expanded(
                                         child: Text(
-                                          '${currentIdType.toUpperCase()}: ${maskIdNumber(idNumber, _showIdNumber)}',
+                                          '${AppLocalizations.translate(getIdTypeKey(currentIdType), locale)}: ${maskIdNumber(idNumber, _showIdNumber)}',
                                           style: TextStyle(fontWeight: FontWeight.w900, fontSize: 12, color: textCol),
                                         ),
                                       ),
@@ -2370,7 +2422,7 @@ class _CustomerProfileTabViewState extends ConsumerState<CustomerProfileTabView>
                                         onPressed: () {
                                           Clipboard.setData(ClipboardData(text: idNumber));
                                           ScaffoldMessenger.of(context).showSnackBar(
-                                            const SnackBar(content: Text('ID NUMBER COPIED TO CLIPBOARD'), backgroundColor: Colors.black),
+                                            SnackBar(content: Text(AppLocalizations.translate('id_copied_snack', locale)), backgroundColor: Colors.black),
                                           );
                                         },
                                         constraints: const BoxConstraints(),
@@ -2381,7 +2433,7 @@ class _CustomerProfileTabViewState extends ConsumerState<CustomerProfileTabView>
                                 ),
                                 const SizedBox(height: 12),
                                 Text(
-                                  'ID details submitted. Admin panel will verify and issue your Green Badge shortly.',
+                                  AppLocalizations.translate('id_submitted_pending_desc', locale),
                                   style: TextStyle(fontSize: 10, fontWeight: FontWeight.bold, color: mutedTextCol),
                                 ),
                               ],
@@ -2397,9 +2449,9 @@ class _CustomerProfileTabViewState extends ConsumerState<CustomerProfileTabView>
                               color: Colors.red.shade100,
                               border: Border.all(color: Colors.red, width: 2),
                             ),
-                            child: const Text(
-                              'THE UPLOADED ID WAS NOT READABLE. PLEASE UPLOAD A CLEAR PHOTO AND SUBMIT AGAIN.',
-                              style: TextStyle(color: Colors.red, fontWeight: FontWeight.w900, fontSize: 8),
+                            child: Text(
+                              AppLocalizations.translate('id_rejected_desc', locale),
+                              style: const TextStyle(color: Colors.red, fontWeight: FontWeight.w900, fontSize: 8),
                             ),
                           ),
                         ],
@@ -2413,7 +2465,7 @@ class _CustomerProfileTabViewState extends ConsumerState<CustomerProfileTabView>
                           items: ['Aadhaar Card', 'PAN Card', 'Voter ID', 'Driving License'].map((id) {
                             return DropdownMenuItem<String>(
                               value: id,
-                              child: Text(id.toUpperCase()),
+                              child: Text(AppLocalizations.translate(getIdTypeKey(id), locale)),
                             );
                           }).toList(),
                           onChanged: (val) {
@@ -2438,15 +2490,15 @@ class _CustomerProfileTabViewState extends ConsumerState<CustomerProfileTabView>
                             }
                           },
                           style: TextStyle(color: textCol, fontSize: 13, fontWeight: FontWeight.bold),
-                          decoration: const InputDecoration(
-                            hintText: 'ENTER ID NUMBER',
-                            hintStyle: TextStyle(color: Colors.grey),
+                          decoration: InputDecoration(
+                            hintText: AppLocalizations.translate('enter_id_number', locale),
+                            hintStyle: const TextStyle(color: Colors.grey),
                           ),
                         ),
                         const SizedBox(height: 16),
                         if (_idType == 'Aadhaar Card') ...[
                           _buildUploadCard(
-                            title: 'Aadhaar Card Front Photo',
+                            title: "${AppLocalizations.translate('id_aadhaar', locale)} ${AppLocalizations.translate('front_photo', locale)}",
                             imageBase64: _idCardPhotoBase64,
                             onTap: () async {
                               final img = await _pickImageWithSource();
@@ -2464,7 +2516,7 @@ class _CustomerProfileTabViewState extends ConsumerState<CustomerProfileTabView>
                           ),
                           const SizedBox(height: 12),
                           _buildUploadCard(
-                            title: 'Aadhaar Card Back Photo',
+                            title: "${AppLocalizations.translate('id_aadhaar', locale)} ${AppLocalizations.translate('back_photo', locale)}",
                             imageBase64: _idCardPhotoBackBase64,
                             onTap: () async {
                               final img = await _pickImageWithSource();
@@ -2482,7 +2534,7 @@ class _CustomerProfileTabViewState extends ConsumerState<CustomerProfileTabView>
                           ),
                         ] else ...[
                           _buildUploadCard(
-                            title: '$_idType Front Photo',
+                            title: "${AppLocalizations.translate(getIdTypeKey(_idType), locale)} ${AppLocalizations.translate('front_photo', locale)}",
                             imageBase64: _idCardPhotoBase64,
                             onTap: () async {
                               final img = await _pickImageWithSource();
@@ -2516,7 +2568,7 @@ class _CustomerProfileTabViewState extends ConsumerState<CustomerProfileTabView>
                                           height: 16,
                                           child: CircularProgressIndicator(color: AppColors.accent, strokeWidth: 2),
                                         )
-                                      : const Text('SUBMIT FOR REVIEW', style: TextStyle(color: AppColors.accent, fontWeight: FontWeight.w900, fontSize: 11)),
+                                      : Text(AppLocalizations.translate('submit_review', locale), style: const TextStyle(color: AppColors.accent, fontWeight: FontWeight.w900, fontSize: 11)),
                                 ),
                               ),
                             ),
@@ -2557,7 +2609,7 @@ class _CustomerProfileTabViewState extends ConsumerState<CustomerProfileTabView>
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
-                          Text('STATE / UT', style: TextStyle(fontWeight: FontWeight.w900, fontSize: 12, color: textCol)),
+                          Text(AppLocalizations.translate('state_ut', locale), style: TextStyle(fontWeight: FontWeight.w900, fontSize: 12, color: textCol)),
                           Container(
                             padding: const EdgeInsets.symmetric(horizontal: 8),
                             decoration: BoxDecoration(
@@ -2678,14 +2730,14 @@ class _CustomerProfileTabViewState extends ConsumerState<CustomerProfileTabView>
                             side: BorderSide(color: borderCol, width: 3.0),
                           ),
                           title: Text(AppLocalizations.translate('delete_account', locale), style: const TextStyle(fontWeight: FontWeight.w900, fontSize: 16, color: Colors.red)),
-                          content: const Text(
-                            'ARE YOU SURE YOU WANT TO PERMANENTLY DELETE YOUR ACCOUNT? THIS WILL WIPE ALL DATABASE ENTRIES. THIS ACTION IS IRREVERSIBLE.',
-                            style: TextStyle(fontWeight: FontWeight.bold, fontSize: 12),
+                          content: Text(
+                            AppLocalizations.translate('delete_account_confirm_desc', locale),
+                            style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 12),
                           ),
                           actions: [
                             TextButton(
                               onPressed: () => Navigator.pop(ctx),
-                              child: Text('CANCEL', style: TextStyle(color: textCol, fontWeight: FontWeight.bold)),
+                              child: Text(AppLocalizations.translate('cancel', locale), style: TextStyle(color: textCol, fontWeight: FontWeight.bold)),
                             ),
                             TextButton(
                               onPressed: () {
@@ -2701,22 +2753,22 @@ class _CustomerProfileTabViewState extends ConsumerState<CustomerProfileTabView>
                                       borderRadius: BorderRadius.zero,
                                       side: BorderSide(color: borderCol, width: 3.0),
                                     ),
-                                    title: Text('VERIFY EMAIL', style: TextStyle(fontWeight: FontWeight.w900, fontSize: 15, color: textCol)),
+                                    title: Text(AppLocalizations.translate('verify_email', locale), style: TextStyle(fontWeight: FontWeight.w900, fontSize: 15, color: textCol)),
                                     content: Column(
                                       mainAxisSize: MainAxisSize.min,
                                       crossAxisAlignment: CrossAxisAlignment.start,
                                       children: [
                                         Text(
-                                          'TO DESTRUCTIVELY DELETE YOUR ACCOUNT, PLEASE ENTER YOUR REGISTERED EMAIL ($email) BELOW:',
+                                          "${AppLocalizations.translate('delete_account_email_desc', locale)} ($email)",
                                           style: TextStyle(fontWeight: FontWeight.bold, fontSize: 11, color: textCol),
                                         ),
                                         const SizedBox(height: 12),
                                         TextField(
                                           controller: emailConfirmController,
                                           style: TextStyle(color: textCol, fontWeight: FontWeight.bold, fontSize: 13),
-                                          decoration: const InputDecoration(
-                                            hintText: 'ENTER REGISTERED EMAIL',
-                                            contentPadding: EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                                          decoration: InputDecoration(
+                                            hintText: AppLocalizations.translate('enter_registered_email', locale),
+                                            contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
                                           ),
                                         ),
                                       ],
@@ -2724,7 +2776,7 @@ class _CustomerProfileTabViewState extends ConsumerState<CustomerProfileTabView>
                                     actions: [
                                       TextButton(
                                         onPressed: () => Navigator.pop(ctx2),
-                                        child: Text('CANCEL', style: TextStyle(color: textCol, fontWeight: FontWeight.bold)),
+                                        child: Text(AppLocalizations.translate('cancel', locale), style: TextStyle(color: textCol, fontWeight: FontWeight.bold)),
                                       ),
                                       TextButton(
                                         onPressed: () async {
@@ -2734,8 +2786,8 @@ class _CustomerProfileTabViewState extends ConsumerState<CustomerProfileTabView>
                                           if (enteredEmail != actualEmail) {
                                             Navigator.pop(ctx2);
                                             ScaffoldMessenger.of(context).showSnackBar(
-                                              const SnackBar(
-                                                content: Text('EMAIL VERIFICATION FAILED. DELETION CANCELLED.'),
+                                              SnackBar(
+                                                content: Text(AppLocalizations.translate('email_verification_failed_snack', locale)),
                                                 backgroundColor: Colors.black,
                                               ),
                                             );
@@ -2755,13 +2807,13 @@ class _CustomerProfileTabViewState extends ConsumerState<CustomerProfileTabView>
                                           ref.read(userProfileProvider.notifier).clearUser();
                                           ref.read(navigationProvider.notifier).resetTo(AppRoute.roleSelection);
                                         },
-                                        child: const Text('CONFIRM DELETE', style: TextStyle(color: Colors.red, fontWeight: FontWeight.w900)),
+                                        child: Text(AppLocalizations.translate('confirm_delete', locale), style: const TextStyle(color: Colors.red, fontWeight: FontWeight.w900)),
                                       ),
                                     ],
                                   ),
                                 );
                               },
-                              child: const Text('PROCEED', style: TextStyle(color: Colors.red, fontWeight: FontWeight.w900)),
+                              child: Text(AppLocalizations.translate('proceed', locale), style: const TextStyle(color: Colors.red, fontWeight: FontWeight.w900)),
                             ),
                           ],
                         ),
