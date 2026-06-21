@@ -4,8 +4,11 @@ import 'dart:convert';
 import '../config/app_config.dart';
 
 Future<String?> uploadImage(String base64Str) async {
+  if (AppConfig.cloudinaryCloudName.isEmpty || AppConfig.cloudinaryUploadPreset.isEmpty) {
+    throw Exception('CLOUDINARY NOT CONFIGUED: Cloud name or upload preset is empty inside app_config.dart');
+  }
+
   try {
-    // Cloudinary unsigned upload endpoint for images
     final url = 'https://api.cloudinary.com/v1_1/${AppConfig.cloudinaryCloudName}/image/upload';
 
     final formData = html.FormData();
@@ -24,15 +27,30 @@ Future<String?> uploadImage(String base64Str) async {
       html.window.console.log('Successfully uploaded image to Cloudinary: $secureUrl');
       return secureUrl;
     } else {
-      html.window.console.warn('Cloudinary image upload failed with status ${req.status}: ${req.responseText}');
+      String details = 'Unknown Error';
+      try {
+        final responseData = jsonDecode(req.responseText ?? '{}');
+        if (responseData['error'] != null && responseData['error']['message'] != null) {
+          details = responseData['error']['message'];
+        } else {
+          details = req.responseText ?? 'Unknown Error';
+        }
+      } catch (_) {
+        details = req.responseText ?? 'Unknown Error';
+      }
+      throw Exception('Cloudinary Image Upload Failed: $details');
     }
   } catch (e) {
     html.window.console.warn('Error uploading image to Cloudinary: $e');
+    rethrow;
   }
-  return null;
 }
 
 Future<String?> uploadVideo(String blobUrl) async {
+  if (AppConfig.cloudinaryCloudName.isEmpty || AppConfig.cloudinaryUploadPreset.isEmpty) {
+    throw Exception('CLOUDINARY NOT CONFIGUED: Cloud name or upload preset is empty inside app_config.dart');
+  }
+
   try {
     // 1. Fetch the local Blob object from the blob URL
     final fetchReq = await html.HttpRequest.request(
@@ -61,10 +79,21 @@ Future<String?> uploadVideo(String blobUrl) async {
       html.window.console.log('Successfully uploaded video to Cloudinary: $secureUrl');
       return secureUrl;
     } else {
-      html.window.console.warn('Cloudinary video upload failed with status ${req.status}: ${req.responseText}');
+      String details = 'Unknown Error';
+      try {
+        final responseData = jsonDecode(req.responseText ?? '{}');
+        if (responseData['error'] != null && responseData['error']['message'] != null) {
+          details = responseData['error']['message'];
+        } else {
+          details = req.responseText ?? 'Unknown Error';
+        }
+      } catch (_) {
+        details = req.responseText ?? 'Unknown Error';
+      }
+      throw Exception('Cloudinary Video Upload Failed: $details');
     }
   } catch (e) {
     html.window.console.warn('Error uploading video to Cloudinary: $e');
+    rethrow;
   }
-  return null;
 }
