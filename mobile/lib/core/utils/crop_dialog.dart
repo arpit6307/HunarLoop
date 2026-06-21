@@ -108,15 +108,14 @@ class _CropDialogState extends State<CropDialog> {
       descText = 'PAN AND PINCH TO ZOOM THE IMAGE INSIDE THE SQUARE.';
     } else {
       titleText = 'CROP PROFILE PICTURE';
-      descText = 'PAN AND PINCH TO ZOOM THE IMAGE INSIDE THE CIRCLE.';
+      descText = 'PAN AND PINCH TO ZOOM THE IMAGE INSIDE THE SQUARE.';
     }
 
     final double containerW = widget.isCover ? 280 : 200;
     final double containerH = widget.isCover ? 100 : 200;
-    final bool useCircle = !widget.isCover && !widget.isPortfolio;
     final decoration = BoxDecoration(
       color: Colors.grey[200],
-      shape: useCircle ? BoxShape.circle : BoxShape.rectangle,
+      shape: BoxShape.rectangle,
       border: Border.all(color: Colors.black, width: 3.0),
     );
 
@@ -147,41 +146,23 @@ class _CropDialogState extends State<CropDialog> {
               width: containerW,
               height: containerH,
               decoration: decoration,
-              child: useCircle
-                  ? ClipOval(
-                      child: InteractiveViewer(
-                        transformationController: _transformController,
-                        boundaryMargin: const EdgeInsets.all(100.0),
-                        minScale: 0.1,
-                        maxScale: 5.0,
-                        onInteractionUpdate: (details) {
-                          setState(() {
-                            _zoom = _transformController.value.getMaxScaleOnAxis();
-                          });
-                        },
-                        child: Image.memory(
-                          bytes,
-                          fit: BoxFit.contain,
-                        ),
-                      ),
-                    )
-                  : ClipRect(
-                      child: InteractiveViewer(
-                        transformationController: _transformController,
-                        boundaryMargin: const EdgeInsets.all(150.0),
-                        minScale: 0.1,
-                        maxScale: 5.0,
-                        onInteractionUpdate: (details) {
-                          setState(() {
-                            _zoom = _transformController.value.getMaxScaleOnAxis();
-                          });
-                        },
-                        child: Image.memory(
-                          bytes,
-                          fit: BoxFit.contain,
-                        ),
-                      ),
-                    ),
+              child: ClipRect(
+                child: InteractiveViewer(
+                  transformationController: _transformController,
+                  boundaryMargin: const EdgeInsets.all(150.0),
+                  minScale: 0.1,
+                  maxScale: 5.0,
+                  onInteractionUpdate: (details) {
+                    setState(() {
+                      _zoom = _transformController.value.getMaxScaleOnAxis();
+                    });
+                  },
+                  child: Image.memory(
+                    bytes,
+                    fit: BoxFit.contain,
+                  ),
+                ),
+              ),
             ),
           ),
           const SizedBox(height: 16),

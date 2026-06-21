@@ -122,6 +122,7 @@ class _CustomerWorkerProfileScreenState extends ConsumerState<CustomerWorkerProf
         final avatarUrl = data['avatarUrl'] ?? worker.avatarUrl;
         final isVerified = data['isVerified'] as bool? ?? worker.isVerified;
         final hunarScore = data['hunarScore'] ?? worker.hunarScore;
+        final rating = data['rating'] ?? worker.rating;
         final portfolioImages = List<String>.from(data['portfolioImages'] ?? []);
         final coverImageUrl = data['coverImageUrl'] as String?;
         final portfolioVideos = List<Map<String, dynamic>>.from(
@@ -282,7 +283,7 @@ class _CustomerWorkerProfileScreenState extends ConsumerState<CustomerWorkerProf
                               children: [
                                 Expanded(child: _buildProfileStat('HUNAR SCORE', '$hunarScore/100', textCol)),
                                 _buildVerticalDivider(),
-                                Expanded(child: _buildProfileStat('RATING', '${worker.rating} ⭐', textCol)),
+                                Expanded(child: _buildProfileStat('RATING', '$rating ⭐', textCol)),
                                 _buildVerticalDivider(),
                                 Expanded(child: _buildProfileStat('EXPERIENCE', experienceYears.toString().toUpperCase(), textCol)),
                               ],

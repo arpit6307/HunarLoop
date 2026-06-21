@@ -324,63 +324,7 @@ class _WorkerPortfolioEditorScreenState extends ConsumerState<WorkerPortfolioEdi
                 ref.read(navigationProvider.notifier).goBack();
               },
             ),
-            actions: [
-              if (uid != 'guest')
-                Padding(
-                  padding: const EdgeInsets.only(right: 12.0),
-                  child: IconButton(
-                    icon: const Icon(Icons.cleaning_services_rounded, color: Colors.red, size: 22),
-                    tooltip: 'CLEAN BANNER & DP (FREE 1MB SPACE)',
-                    onPressed: () async {
-                      final confirm = await showDialog<bool>(
-                        context: context,
-                        builder: (ctx) => AlertDialog(
-                          backgroundColor: Colors.white,
-                          shape: const RoundedRectangleBorder(
-                            borderRadius: BorderRadius.zero,
-                            side: BorderSide(color: Colors.black, width: 3.0),
-                          ),
-                          title: const Text('FREE UP PROFILE SPACE', style: TextStyle(fontWeight: FontWeight.w900, color: Colors.black)),
-                          content: const Text(
-                            'THIS WILL RESET YOUR COVER BANNER AND PROFILE PICTURE TO CLEAR UNCOMPRESSED SPACE (~1MB) SO YOU CAN UPLOAD NEW PORTFOLIO PHOTOS AND VIDEOS.',
-                            style: TextStyle(fontSize: 11, fontWeight: FontWeight.bold, color: Colors.black54),
-                          ),
-                          actions: [
-                            TextButton(
-                              onPressed: () => Navigator.pop(ctx, false),
-                              child: const Text('CANCEL', style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold)),
-                            ),
-                            TextButton(
-                              onPressed: () => Navigator.pop(ctx, true),
-                              child: const Text('FREE SPACE NOW', style: TextStyle(color: Colors.red, fontWeight: FontWeight.w900)),
-                            ),
-                          ],
-                        ),
-                      );
-
-                      if (confirm == true) {
-                        try {
-                          await FirebaseFirestore.instance.collection('users').doc(uid).update({
-                            'coverImageUrl': FieldValue.delete(),
-                            'avatarUrl': FieldValue.delete(),
-                          });
-                          if (context.mounted) {
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              const SnackBar(content: Text('PROFILE SPACE CLEARED! UPLOAD COVERS & PORTFOLIO NOW.'), backgroundColor: Colors.black),
-                            );
-                          }
-                        } catch (e) {
-                          if (context.mounted) {
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              SnackBar(content: Text('ERROR: ${e.toString().toUpperCase()}'), backgroundColor: Colors.red),
-                            );
-                          }
-                        }
-                      }
-                    },
-                  ),
-                ),
-            ],
+            actions: const [],
           ),
           body: SafeArea(
             child: SingleChildScrollView(
